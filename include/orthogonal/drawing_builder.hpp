@@ -1,0 +1,29 @@
+#ifndef MY_DRAWING_BUILDER_H
+#define MY_DRAWING_BUILDER_H
+
+#include <memory>
+#include <unordered_map>
+#include <vector>
+
+#include "core/graph/attributes.hpp"
+#include "core/graph/graph.hpp"
+#include "orthogonal/shape/shape.hpp"
+
+void make_svg(const Graph& graph, const GraphAttributes& attributes,
+              const std::string& filename);
+
+struct DrawingResult {
+  std::unique_ptr<Graph> augmented_graph;
+  GraphAttributes attributes;
+  Shape shape;
+  size_t initial_number_of_cycles;
+  size_t number_of_added_cycles;
+  size_t number_of_useless_bends;
+};
+
+DrawingResult make_orthogonal_drawing(const Graph& graph);
+
+std::pair<std::unordered_map<int, int>, std::unordered_map<int, int>>
+compute_node_to_index_position(const Graph& graph,
+                               const GraphAttributes& attributes);
+#endif
