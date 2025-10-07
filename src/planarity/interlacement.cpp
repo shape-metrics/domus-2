@@ -1,7 +1,7 @@
 #include "planarity/interlacement.hpp"
 
-std::unordered_map<int, int> compute_cycle_labels(const Segment& segment,
-                                                  const Cycle& cycle) {
+std::unordered_map<int, int> compute_cycle_labels(const Segment &segment,
+                                                  const Cycle &cycle) {
   std::unordered_map<int, int> cycle_labels;
   int found_attachments = 0;
   const int total_attachments =
@@ -17,17 +17,17 @@ std::unordered_map<int, int> compute_cycle_labels(const Segment& segment,
   return cycle_labels;
 }
 
-void compute_conflicts(const std::vector<Segment>& segments, const Cycle& cycle,
-                       Graph& interlacement_graph) {
+void compute_conflicts(const std::vector<Segment> &segments, const Cycle &cycle,
+                       UndirectedSimpleGraph &interlacement_graph) {
   if (segments.size() <= 1) return;
   for (size_t i = 0; i < segments.size() - 1; ++i) {
-    const Segment& segment = segments[i];
+    const Segment &segment = segments[i];
     std::unordered_map<int, int> cycle_labels =
         compute_cycle_labels(segment, cycle);
     const size_t number_of_labels = 2 * segment.get_attachments().size();
     std::vector<int> labels(number_of_labels);
     for (size_t j = i + 1; j < segments.size(); ++j) {
-      const Segment& otherSegment = segments[j];
+      const Segment &otherSegment = segments[j];
       for (size_t k = 0; k < number_of_labels; ++k) labels[k] = 0;
       for (const int attachment_id : otherSegment.get_attachments()) {
         const int cycle_label = cycle_labels[attachment_id];
@@ -48,15 +48,14 @@ void compute_conflicts(const std::vector<Segment>& segments, const Cycle& cycle,
         part_sum = part_sum - labels[k] - labels[(1 + k) % number_of_labels];
       }
       if (are_in_conflict)
-        interlacement_graph.add_undirected_edge(static_cast<int>(i),
-                                                static_cast<int>(j));
+        interlacement_graph.add_edge(static_cast<int>(i), static_cast<int>(j));
     }
   }
 }
 
-std::unique_ptr<Graph> compute_interlacement_graph(
-    const std::vector<Segment>& segments, const Cycle& cycle) {
-  auto interlacement_graph = std::make_unique<Graph>();
+std::unique_ptr<UndirectedSimpleGraph> compute_interlacement_graph(
+    const std::vector<Segment> &segments, const Cycle &cycle) {
+  auto interlacement_graph = std::make_unique<UndirectedSimpleGraph>();
   for (int i = 0; i < static_cast<int>(segments.size()); ++i)
     interlacement_graph->add_node(i);
   compute_conflicts(segments, cycle, *interlacement_graph);

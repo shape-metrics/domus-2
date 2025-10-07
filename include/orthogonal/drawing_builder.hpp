@@ -9,11 +9,11 @@
 #include "core/graph/graph.hpp"
 #include "orthogonal/shape/shape.hpp"
 
-void make_svg(const Graph& graph, const GraphAttributes& attributes,
-              const std::string& filename);
+void make_svg(const UndirectedSimpleGraph &graph,
+              const GraphAttributes &attributes, const std::string &filename);
 
 struct DrawingResult {
-  std::unique_ptr<Graph> augmented_graph;
+  std::unique_ptr<UndirectedSimpleGraph> augmented_graph;
   GraphAttributes attributes;
   Shape shape;
   size_t initial_number_of_cycles;
@@ -21,9 +21,10 @@ struct DrawingResult {
   size_t number_of_useless_bends;
 };
 
-DrawingResult make_orthogonal_drawing(const Graph& graph);
+DrawingResult make_orthogonal_drawing(const UndirectedSimpleGraph &graph);
 
 std::pair<std::unordered_map<int, int>, std::unordered_map<int, int>>
-compute_node_to_index_position(const Graph& graph,
-                               const GraphAttributes& attributes);
+compute_node_to_index_position(const UndirectedSimpleGraph &graph,
+                               const GraphAttributes &attributes);
+
 #endif

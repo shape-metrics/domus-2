@@ -3,21 +3,21 @@
 #include "orthogonal/drawing_builder.hpp"
 #include "orthogonal/equivalence_classes.hpp"
 
-auto build_index_to_nodes_map(const Graph& graph,
-                              const GraphAttributes& attributes) {
+auto build_index_to_nodes_map(const UndirectedSimpleGraph &graph,
+                              const GraphAttributes &attributes) {
   auto [node_to_index_x, node_to_index_y] =
       compute_node_to_index_position(graph, attributes);
   std::unordered_map<int, std::unordered_set<int>> index_x_to_nodes;
-  for (const auto& [node_id, index] : node_to_index_x)
+  for (const auto &[node_id, index] : node_to_index_x)
     index_x_to_nodes[index].insert(node_id);
   std::unordered_map<int, std::unordered_set<int>> index_y_to_nodes;
-  for (const auto& [node_id, index] : node_to_index_y)
+  for (const auto &[node_id, index] : node_to_index_y)
     index_y_to_nodes[index].insert(node_id);
   return std::make_tuple(index_x_to_nodes, node_to_index_x, index_y_to_nodes,
                          node_to_index_y);
 }
 
-bool can_move_to_prev_index(IntPairHashSet& prev, IntPairHashSet& to_shift) {
+bool can_move_to_prev_index(IntPairHashSet &prev, IntPairHashSet &to_shift) {
   if (to_shift.size() != 1) throw std::runtime_error("can_move_left: wtf");
   auto [to_shift_min, to_shift_max] = *to_shift.begin();
   for (auto [prev_min, prev_max] : prev)
@@ -26,13 +26,13 @@ bool can_move_to_prev_index(IntPairHashSet& prev, IntPairHashSet& to_shift) {
 }
 
 int compute_shift_amount(
-    int index,
-    std::unordered_map<int, IntPairHashSet>& index_to_min_max_coordinate) {
+    const int index,
+    std::unordered_map<int, IntPairHashSet> &index_to_min_max_coordinate) {
   int shift = 0;
-  IntPairHashSet& to_shift = index_to_min_max_coordinate[index];
+  IntPairHashSet &to_shift = index_to_min_max_coordinate[index];
   while (true) {
     if (index - shift == 0) return shift;
-    IntPairHashSet& prev = index_to_min_max_coordinate[index - shift - 1];
+    IntPairHashSet &prev = index_to_min_max_coordinate[index - shift - 1];
     if (can_move_to_prev_index(prev, to_shift))
       shift++;
     else
@@ -42,10 +42,10 @@ int compute_shift_amount(
 }
 
 auto build_index_x_to_min_max_index_y(
-    std::unordered_map<int, std::unordered_set<int>>& index_x_to_nodes,
-    std::unordered_map<int, int>& node_to_index_y) {
+    std::unordered_map<int, std::unordered_set<int>> &index_x_to_nodes,
+    std::unordered_map<int, int> &node_to_index_y) {
   std::unordered_map<int, IntPairHashSet> index_to_min_max_y;
-  for (const auto& [index, nodes] : index_x_to_nodes) {
+  for (const auto &[index, nodes] : index_x_to_nodes) {
     int min_y = INT_MAX;
     int max_y = 0;
     for (int node_id : nodes) {
@@ -59,10 +59,10 @@ auto build_index_x_to_min_max_index_y(
 }
 
 auto build_index_y_to_min_max_index_x(
-    std::unordered_map<int, std::unordered_set<int>>& index_to_nodes,
-    std::unordered_map<int, int>& node_to_index_x) {
+    std::unordered_map<int, std::unordered_set<int>> &index_to_nodes,
+    std::unordered_map<int, int> &node_to_index_x) {
   std::unordered_map<int, IntPairHashSet> index_to_min_max_x;
-  for (const auto& [index, nodes] : index_to_nodes) {
+  for (const auto &[index, nodes] : index_to_nodes) {
     int min_x = INT_MAX;
     int max_x = 0;
     for (int node_id : nodes) {
@@ -75,7 +75,7 @@ auto build_index_y_to_min_max_index_x(
   return index_to_min_max_x;
 }
 
-void compact_area(const Graph& graph, GraphAttributes& attributes) {
+void compact_area(const UndirectedSimpleGraph &graph, GraphAttributes &attributes) {
   auto [index_x_to_nodes, nodes_to_index_x, index_y_to_nodes,
         nodes_to_index_y] = build_index_to_nodes_map(graph, attributes);
   // compacting x
@@ -88,7 +88,7 @@ void compact_area(const Graph& graph, GraphAttributes& attributes) {
     if (shift_amount == 0) {
       continue;
     }
-    std::unordered_set<int>& nodes_to_shift = index_x_to_nodes[index];
+    std::unordered_set<int> &nodes_to_shift = index_x_to_nodes[index];
     for (int node_id : nodes_to_shift) {
       int old_x = attributes.get_position_x(node_id);
       attributes.change_position_x(node_id, old_x - 100 * shift_amount);
@@ -105,7 +105,7 @@ void compact_area(const Graph& graph, GraphAttributes& attributes) {
     ++index;
     int shift_amount = compute_shift_amount(index, index_to_min_max_x);
     if (shift_amount == 0) continue;
-    std::unordered_set<int>& nodes_to_shift = index_y_to_nodes[index];
+    std::unordered_set<int> &nodes_to_shift = index_y_to_nodes[index];
     for (int node_id : nodes_to_shift) {
       int old_y = attributes.get_position_y(node_id);
       attributes.change_position_y(node_id, old_y - 100 * shift_amount);

@@ -1,5 +1,7 @@
 #include "orthogonal/shape/variables_handler.hpp"
 
+#include <iostream>
+
 void VariablesHandler::add_variable(int i, int j, const Direction direction) {
   variable_to_edge[m_next_var] = std::make_pair(i, j);
   variable_to_direction[m_next_var] = direction;
@@ -31,11 +33,11 @@ void VariablesHandler::add_edge_variables(const int i, const int j) {
   add_variable(i, j, Direction::RIGHT);
 }
 
-VariablesHandler::VariablesHandler(const Graph& graph) {
-  for (const auto& node : graph.get_nodes()) {
-    const int i = node.get_id();
-    for (auto& edge : node.get_edges()) {
-      const int j = edge.get_to().get_id();
+VariablesHandler::VariablesHandler(const UndirectedSimpleGraph &graph) {
+  for (const GraphNode *node : graph.get_nodes()) {
+    const int i = node->get_id();
+    for (const GraphEdge &edge : node->get_edges()) {
+      const int j = edge.get_to_id();
       if (i > j) continue;
       add_edge_variables(i, j);
     }
@@ -66,7 +68,7 @@ int VariablesHandler::get_variable(int i, int j, Direction direction) const {
   throw std::invalid_argument("Invalid direction");
 }
 
-const std::pair<int, int>& VariablesHandler::get_edge_of_variable(
+const std::pair<int, int> &VariablesHandler::get_edge_of_variable(
     const int variable) const {
   return variable_to_edge.at(variable);
 }
@@ -93,7 +95,7 @@ bool VariablesHandler::get_variable_value(int variable) const {
 
 std::string VariablesHandler::to_string() const {
   std::string result = "VariablesHandler:\n";
-  for (const auto& [variable, edge] : variable_to_edge) {
+  for (const auto &[variable, edge] : variable_to_edge) {
     result +=
         ("(" + std::to_string(edge.first) + " -> " +
          std::to_string(edge.second) + "): " + std::to_string(variable) + ", " +

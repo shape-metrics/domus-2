@@ -27,7 +27,7 @@ int EquivalenceClasses::get_class_of_elem(int elem) const {
   return m_elem_to_class.at(elem);
 }
 
-const std::unordered_set<int>& EquivalenceClasses::get_elems_of_class(
+const std::unordered_set<int> &EquivalenceClasses::get_elems_of_class(
     int class_id) const {
   if (!has_class(class_id))
     throw std::runtime_error(
@@ -37,7 +37,7 @@ const std::unordered_set<int>& EquivalenceClasses::get_elems_of_class(
 
 std::string EquivalenceClasses::to_string() const {
   std::string result = "EquivalenceClasses:\n";
-  for (const auto& [fst, snd] : m_class_to_elems) {
+  for (const auto &[fst, snd] : m_class_to_elems) {
     result += "Class " + std::to_string(fst) + ": ";
     for (const int elem : snd) result += std::to_string(elem) + " ";
     result += "\n";
@@ -50,34 +50,38 @@ void EquivalenceClasses::print() const {
 }
 
 void directional_node_expander(
-    const Shape& shape, const Graph& graph, const GraphNode& node, int class_id,
-    EquivalenceClasses& equivalence_classes,
-    const std::function<bool(const Shape&, int, int)>& is_direction_wrong) {
-  int node_id = node.get_id();
+    const Shape &shape, const UndirectedSimpleGraph &graph,
+    const GraphNode &node, const int class_id,
+    EquivalenceClasses &equivalence_classes,
+    const std::function<bool(const Shape &, int, int)> &is_direction_wrong) {
+  const int node_id = node.get_id();
   equivalence_classes.set_class(node_id, class_id);
-  for (auto& edge : node.get_edges()) {
-    int neighbor_id = edge.get_to().get_id();
+  for (auto &edge : node.get_edges()) {
+    const int neighbor_id = edge.get_to_id();
+    const GraphNode &neighbor = graph.get_node_by_id(neighbor_id);
     if (equivalence_classes.has_elem_a_class(neighbor_id)) continue;
     if (is_direction_wrong(shape, node_id, neighbor_id)) continue;
-    directional_node_expander(shape, graph, edge.get_to(), class_id,
+    directional_node_expander(shape, graph, neighbor, class_id,
                               equivalence_classes, is_direction_wrong);
   }
 }
 
-void horizontal_node_expander(const Shape& shape, const Graph& graph,
-                              const GraphNode& node, const int class_id,
-                              EquivalenceClasses& equivalence_classes) {
-  auto is_direction_wrong = [](const Shape& s, int i, int j) {
+void horizontal_node_expander(const Shape &shape,
+                              const UndirectedSimpleGraph &graph,
+                              const GraphNode &node, const int class_id,
+                              EquivalenceClasses &equivalence_classes) {
+  auto is_direction_wrong = [](const Shape &s, int i, int j) {
     return s.is_vertical(i, j);
   };
   directional_node_expander(shape, graph, node, class_id, equivalence_classes,
                             is_direction_wrong);
 }
 
-void vertical_node_expander(const Shape& shape, const Graph& graph,
-                            const GraphNode& node, const int class_id,
-                            EquivalenceClasses& equivalence_classes) {
-  auto is_direction_wrong = [](const Shape& s, int i, int j) {
+void vertical_node_expander(const Shape &shape,
+                            const UndirectedSimpleGraph &graph,
+                            const GraphNode &node, const int class_id,
+                            EquivalenceClasses &equivalence_classes) {
+  auto is_direction_wrong = [](const Shape &s, int i, int j) {
     return s.is_horizontal(i, j);
   };
   directional_node_expander(shape, graph, node, class_id, equivalence_classes,
@@ -85,12 +89,15 @@ void vertical_node_expander(const Shape& shape, const Graph& graph,
 }
 
 std::pair<const EquivalenceClasses, const EquivalenceClasses>
-build_equivalence_classes(const Shape& shape, const Graph& graph) {
+build_equivalence_classes(const Shape &shape,
+                          const UndirectedSimpleGraph &graph) {
   EquivalenceClasses equivalence_classes_x;
   EquivalenceClasses equivalence_classes_y;
   int next_class_x = 0;
   int next_class_y = 0;
-  for (auto& node : graph.get_nodes()) {
+  const std::vector<const GraphNode *> nodes = graph.get_nodes();
+  for (const GraphNode *node_ptr : nodes) {
+    const GraphNode &node = *node_ptr;
     if (!equivalence_classes_y.has_elem_a_class(node.get_id()))
       horizontal_node_expander(shape, graph, node, next_class_y++,
                                equivalence_classes_y);
@@ -98,7 +105,8 @@ build_equivalence_classes(const Shape& shape, const Graph& graph) {
       vertical_node_expander(shape, graph, node, next_class_x++,
                              equivalence_classes_x);
   }
-  for (const auto& node : graph.get_nodes()) {
+  for (const GraphNode *node_ptr : nodes) {
+    const GraphNode &node = *node_ptr;
     if (!equivalence_classes_x.has_elem_a_class(node.get_id()))
       equivalence_classes_x.set_class(node.get_id(), next_class_x++);
     if (!equivalence_classes_y.has_elem_a_class(node.get_id()))
@@ -108,39 +116,49 @@ build_equivalence_classes(const Shape& shape, const Graph& graph) {
                         std::move(equivalence_classes_y));
 }
 
-std::tuple<std::unique_ptr<Graph>, std::unique_ptr<Graph>, GraphAttributes,
+std::tuple<std::unique_ptr<DirectedSimpleGraph>,
+           std::unique_ptr<DirectedSimpleGraph>, GraphAttributes,
            GraphAttributes>
-equivalence_classes_to_ordering(const EquivalenceClasses& equivalence_classes_x,
-                                const EquivalenceClasses& equivalence_classes_y,
-                                const Graph& graph, const Shape& shape) {
-  auto ordering_x = std::make_unique<Graph>();
-  auto ordering_y = std::make_unique<Graph>();
-  for (int class_id : equivalence_classes_x.get_all_classes())
+equivalence_classes_to_ordering(const EquivalenceClasses &equivalence_classes_x,
+                                const EquivalenceClasses &equivalence_classes_y,
+                                const UndirectedSimpleGraph &graph,
+                                const Shape &shape) {
+  auto ordering_x = std::make_unique<DirectedSimpleGraph>();
+  auto ordering_y = std::make_unique<DirectedSimpleGraph>();
+  for (const int class_id : equivalence_classes_x.get_all_classes())
     ordering_x->add_node(class_id);
-  for (int class_id : equivalence_classes_y.get_all_classes())
+  for (const int class_id : equivalence_classes_y.get_all_classes())
     ordering_y->add_node(class_id);
   GraphAttributes ordering_x_edge_to_graph_edge;
   GraphAttributes ordering_y_edge_to_graph_edge;
   ordering_x_edge_to_graph_edge.add_attribute(Attribute::EDGES_ANY_LABEL);
   ordering_y_edge_to_graph_edge.add_attribute(Attribute::EDGES_ANY_LABEL);
-  for (auto& node : graph.get_nodes()) {
-    int i = node.get_id();
-    for (auto& edge : node.get_edges()) {
-      int j = edge.get_to().get_id();
-      if (shape.is_right(i, j)) {
-        int node_class_x = equivalence_classes_x.get_class_of_elem(i);
-        int neighbor_class_x = equivalence_classes_x.get_class_of_elem(j);
+  for (const GraphNode *node : graph.get_nodes()) {
+    const int node_id = node->get_id();
+    for (const GraphEdge &edge : node->get_edges()) {
+      const int neighbor_id = edge.get_to_id();
+      if (shape.is_right(node_id, neighbor_id)) {
+        const int node_class_x =
+            equivalence_classes_x.get_class_of_elem(node_id);
+        const int neighbor_class_x =
+            equivalence_classes_x.get_class_of_elem(neighbor_id);
         if (ordering_x->has_edge(node_class_x, neighbor_class_x)) continue;
-        auto& e = ordering_x->add_edge(node_class_x, neighbor_class_x);
-        ordering_x_edge_to_graph_edge.set_edge_any_label(e.get_id(),
-                                                         std::make_pair(i, j));
-      } else if (shape.is_up(i, j)) {
-        int node_class_y = equivalence_classes_y.get_class_of_elem(i);
-        int neighbor_class_y = equivalence_classes_y.get_class_of_elem(j);
+        ordering_x->add_edge(node_class_x, neighbor_class_x);
+        const GraphEdge &e =
+            ordering_x->get_edge(node_class_x, neighbor_class_x);
+        ordering_x_edge_to_graph_edge.set_edge_any_label(
+            e.get_id(), std::make_pair(node_id, neighbor_id));
+      } else if (shape.is_up(node_id, neighbor_id)) {
+        const int node_class_y =
+            equivalence_classes_y.get_class_of_elem(node_id);
+        const int neighbor_class_y =
+            equivalence_classes_y.get_class_of_elem(neighbor_id);
         if (ordering_y->has_edge(node_class_y, neighbor_class_y)) continue;
-        auto& e = ordering_y->add_edge(node_class_y, neighbor_class_y);
-        ordering_y_edge_to_graph_edge.set_edge_any_label(e.get_id(),
-                                                         std::make_pair(i, j));
+        ordering_y->add_edge(node_class_y, neighbor_class_y);
+        const GraphEdge &e =
+            ordering_y->get_edge(node_class_y, neighbor_class_y);
+        ordering_y_edge_to_graph_edge.set_edge_any_label(
+            e.get_id(), std::make_pair(node_id, neighbor_id));
       }
     }
   }

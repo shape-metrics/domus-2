@@ -4,13 +4,15 @@
 #include <sstream>
 #include <stdexcept>
 
-std::unique_ptr<Graph> load_graph_from_txt_file(const std::string& filename) {
-  auto graph = std::make_unique<Graph>();
+std::unique_ptr<UndirectedSimpleGraph> load_graph_from_txt_file(
+    const std::string &filename) {
+  auto graph = std::make_unique<UndirectedSimpleGraph>();
   load_graph_from_txt_file(filename, *graph);
   return graph;
 }
 
-void load_graph_from_txt_file(const std::string& filename, Graph& graph) {
+void load_graph_from_txt_file(const std::string &filename,
+                              UndirectedSimpleGraph &graph) {
   if (graph.size() > 0)
     throw std::runtime_error("Graph is not empty. Please use a new graph.");
   // example: "../domus/rome_graphs/grafo1848.18.txt"
@@ -38,15 +40,16 @@ void load_graph_from_txt_file(const std::string& filename, Graph& graph) {
   infile.close();
 }
 
-void save_graph_to_file(const Graph& graph, const std::string& filename) {
+void save_graph_to_file(const UndirectedSimpleGraph &graph,
+                        const std::string &filename) {
   std::ofstream outfile(filename);
   if (!outfile)
     throw std::runtime_error("Could not write to file: " + filename);
   outfile << "nodes:\n";
-  for (auto node : graph.get_nodes()) outfile << node.get_id() << '\n';
+  for (const int node_id : graph.get_nodes_ids()) outfile << node_id << '\n';
   outfile << "edges:\n";
-  for (const auto& edge : graph.get_edges())
-    outfile << edge.get_from().get_id() << ' ' << edge.get_to().get_id()
-            << '\n';
+  for (const GraphEdge &edge : graph.get_edges())
+    if (edge.get_from_id() < edge.get_to_id())
+      outfile << edge.get_from_id() << ' ' << edge.get_to_id() << '\n';
   outfile.close();
 }

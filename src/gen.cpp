@@ -39,8 +39,10 @@ int main() {
       double density = min_density + (max_density - min_density) * i /
                                          graphs_generated_per_same_nodes_number;
       int number_of_edges = static_cast<int>(density * number_of_nodes);
+      std::cout << "\rGenerating graph with " << number_of_nodes
+                << " nodes and " << number_of_edges << " edges.     ";
       auto graph = generate_connected_random_graph_degree_max_4(
-          number_of_nodes, number_of_edges);
+          static_cast<size_t>(number_of_nodes), static_cast<size_t>(number_of_edges));
       std::string filename = sub_folder + "graph_" + std::to_string(i) + "_n" +
                              std::to_string(number_of_nodes) + "_m" +
                              std::to_string(number_of_edges) + ".txt";
@@ -48,7 +50,7 @@ int main() {
       ++number_of_generated_graphs;
     }
   }
-  std::cout << "Generated " << number_of_generated_graphs << " graphs."
+  std::cout << "\nGenerated " << number_of_generated_graphs << " graphs."
             << std::endl;
   return 0;
 }

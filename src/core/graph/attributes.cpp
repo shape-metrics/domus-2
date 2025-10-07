@@ -1,5 +1,6 @@
 #include "core/graph/attributes.hpp"
 
+#include <iostream>
 #include <ranges>
 
 struct NodePosition {
@@ -9,7 +10,7 @@ struct NodePosition {
     this->x_m = x;
     this->y_m = y;
   }
-  bool operator==(const NodePosition& other) const {
+  bool operator==(const NodePosition &other) const {
     return x_m == other.x_m && y_m == other.y_m;
   }
 };
@@ -69,14 +70,14 @@ void GraphAttributes::change_node_color(const int node_id, const Color color) {
 }
 
 void GraphAttributes::set_edge_any_label(const int edge_id,
-                                         const std::any& label) {
+                                         const std::any &label) {
   if (has_attribute_by_id(Attribute::EDGES_ANY_LABEL, edge_id))
     throw std::runtime_error(
         "GraphAttributes::set_edge_any_label: the edge already has a label");
   mattribute_to_node.at(Attribute::EDGES_ANY_LABEL)[edge_id] = label;
 }
 
-const std::any& GraphAttributes::get_edge_any_label(const int edge_id) const {
+const std::any &GraphAttributes::get_edge_any_label(const int edge_id) const {
   if (!has_attribute_by_id(Attribute::EDGES_ANY_LABEL, edge_id))
     throw std::runtime_error(
         "GraphAttributes::get_edge_any_label: the edge does not have a label");
@@ -92,7 +93,7 @@ void GraphAttributes::change_position(const int node_id, const int x,
   if (!has_position(node_id))
     throw std::runtime_error(
         "GraphAttributes::change_position Node does not have a position");
-  auto& position = std::any_cast<NodePosition&>(
+  auto &position = std::any_cast<NodePosition &>(
       mattribute_to_node.at(Attribute::NODES_POSITION).at(node_id));
   position.x_m = x;
   position.y_m = y;
@@ -106,7 +107,7 @@ void GraphAttributes::change_position_x(const int node_id, const int x) {
   if (!has_position(node_id))
     throw std::runtime_error(
         "GraphAttributes::change_position Node does not have a position");
-  auto& position = std::any_cast<NodePosition&>(
+  auto &position = std::any_cast<NodePosition &>(
       mattribute_to_node.at(Attribute::NODES_POSITION).at(node_id));
   position.x_m = x;
 }
@@ -119,7 +120,7 @@ void GraphAttributes::change_position_y(const int node_id, const int y) {
   if (!has_position(node_id))
     throw std::runtime_error(
         "GraphAttributes::change_position_y Node does not have a position");
-  auto& position = std::any_cast<NodePosition&>(
+  auto &position = std::any_cast<NodePosition &>(
       mattribute_to_node.at(Attribute::NODES_POSITION).at(node_id));
   position.y_m = y;
 }

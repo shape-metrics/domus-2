@@ -20,13 +20,13 @@ class VariablesHandler {
   void add_edge_variables(int i, int j);
 
  public:
-  explicit VariablesHandler(const Graph& graph);
+  explicit VariablesHandler(const UndirectedSimpleGraph &graph);
   int get_up_variable(int i, int j) const;
   int get_down_variable(int i, int j) const;
   int get_left_variable(int i, int j) const;
   int get_right_variable(int i, int j) const;
   int get_variable(int i, int j, Direction direction) const;
-  const std::pair<int, int>& get_edge_of_variable(int variable) const;
+  const std::pair<int, int> &get_edge_of_variable(int variable) const;
   void set_variable_value(int variable, bool value);
   bool get_variable_value(int variable) const;
   Direction get_direction_of_edge(int i, int j) const;

@@ -37,11 +37,11 @@ GlucoseResult launch_glucose(const std::string& conjunctive_normal_form_file,
   if (randomize) {
     const std::string rnd_seed =
         "-rnd-seed=" + std::to_string(std::random_device{}());
-    command = "./../glucose" + conjunctive_normal_form_file + " " +
+    command = "./glucose" + conjunctive_normal_form_file + " " +
               output_file + " " + proof_path + " -certified " + "-rnd-init " +
               rnd_seed;
   } else {
-    command = "./../glucose " + conjunctive_normal_form_file + " " +
+    command = "./glucose " + conjunctive_normal_form_file + " " +
               output_file + " -certified " + proof_path;
   }
   command += " > /dev/null 2>&1";

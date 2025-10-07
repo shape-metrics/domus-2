@@ -1,5 +1,6 @@
 #include "orthogonal/shape/shape.hpp"
 
+#include <iostream>
 #include <stdexcept>
 
 std::string direction_to_string(const Direction direction) {
@@ -17,7 +18,7 @@ std::string direction_to_string(const Direction direction) {
   }
 }
 
-Direction string_to_direction(const std::string& direction) {
+Direction string_to_direction(const std::string &direction) {
   if (direction == "left") return Direction::LEFT;
   if (direction == "right") return Direction::RIGHT;
   if (direction == "up") return Direction::UP;
@@ -114,7 +115,7 @@ void Shape::remove_direction(const int node_id_1, const int node_id_2) {
 
 std::string Shape::to_string() const {
   std::string result = "Shape:\n";
-  for (auto& [pair, direction] : m_shape) {
+  for (auto &[pair, direction] : m_shape) {
     if (direction == Direction::LEFT) continue;
     if (direction == Direction::DOWN) continue;
     result += ("(" + std::to_string(pair.first) + " -> " +

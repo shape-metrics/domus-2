@@ -11,13 +11,13 @@
 
 struct Segment {
  private:
-  std::unique_ptr<Graph> segment;
+  std::unique_ptr<UndirectedSimpleGraph> segment;
   std::unordered_set<int> attachments;
 
  public:
-  Graph& get_segment();
-  const Graph& get_segment() const;
-  const std::unordered_set<int>& get_attachments() const;
+  UndirectedSimpleGraph &get_segment();
+  const UndirectedSimpleGraph &get_segment() const;
+  const std::unordered_set<int> &get_attachments() const;
   bool has_attachment(int attachment_id) const;
   void add_attachment(int attachment_id);
   std::string to_string() const;
@@ -25,11 +25,12 @@ struct Segment {
   Segment();
 };
 
-std::vector<Segment> compute_segments(const Graph& graph, const Cycle& cycle);
+std::vector<Segment> compute_segments(const UndirectedSimpleGraph &graph,
+                                      const Cycle &cycle);
 
-bool is_segment_a_path(const Segment& segment);
+bool is_segment_a_path(const Segment &segment);
 
-std::list<int> compute_path_between_attachments(const Segment& segment,
+std::list<int> compute_path_between_attachments(const Segment &segment,
                                                 int attachment_1,
                                                 int attachment_2);
 

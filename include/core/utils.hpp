@@ -2,47 +2,14 @@
 #define MY_UTILS_H
 
 #include <algorithm>
-#include <iostream>
-#include <memory>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-template <typename Iterable>
-void print_iterable(const Iterable& container, const std::string& end = "\n") {
-  std::cout << "[ ";
-  for (const auto& elem : container) std::cout << elem << " ";
-  std::cout << "]" << end;
-}
-
-template <typename T>
-concept Printable = requires(const T& t) {
-  { t.print() } -> std::same_as<void>;
-  { t.to_string() } -> std::same_as<std::string>;
-};
-
-template <Printable T>
-void print_vector_of_printable(const std::vector<T>& container) {
-  for (const auto& elem : container) elem.print();
-}
-
-template <Printable T>
-std::string to_string_vector_of_printable(const std::vector<T>& container) {
-  std::string result{};
-  for (const auto& elem : container) result += elem.to_string() + "\n";
-  return result;
-}
-
-template <typename T>
-void print_array(T array[], const int size, const std::string& end = "\n") {
-  std::cout << "[ ";
-  for (int i = 0; i < size; ++i) std::cout << array[i] << " ";
-  std::cout << "]" << end;
-}
-
-void save_string_to_file(const std::string& filename,
-                         const std::string& content);
+void save_string_to_file(const std::string &filename,
+                         const std::string &content);
 
 enum class Color {
   RED,
@@ -59,13 +26,13 @@ enum class Color {
 
 std::string color_to_string(Color color);
 
-std::string get_unique_filename(const std::string& base_filename,
-                                const std::string& folder);
+std::string get_unique_filename(const std::string &base_filename,
+                                const std::string &folder);
 
-std::string get_unique_filename(const std::string& base_filename);
+std::string get_unique_filename(const std::string &base_filename);
 
 struct int_pair_hash {
-  int operator()(const std::pair<int, int>& p) const {
+  int operator()(const std::pair<int, int> &p) const {
     const int h1 = static_cast<int>(std::hash<int>{}(p.first));
     const int h2 = static_cast<int>(std::hash<int>{}(p.second));
     const int mult = h2 * static_cast<int>(0x9e3779b9);
@@ -73,9 +40,9 @@ struct int_pair_hash {
   }
 };
 
-std::vector<std::string> collect_txt_files(const std::string& folder_path);
+std::vector<std::string> collect_txt_files(const std::string &folder_path);
 
-double compute_stddev(const std::vector<int>& values);
+double compute_stddev(const std::vector<int> &values);
 
 using IntPairHashSet = std::unordered_set<std::pair<int, int>, int_pair_hash>;
 
@@ -86,12 +53,12 @@ class CircularSequence {
 
  public:
   CircularSequence() = default;
-  explicit CircularSequence(const std::vector<T>& elements)
+  explicit CircularSequence(const std::vector<T> &elements)
       : m_elements(elements) {
     recompute_positions();
   }
   void reverse() {
-    std::reverse(m_elements.begin(), m_elements.end());
+    std::ranges::reverse(m_elements);
     recompute_positions();
   }
   void recompute_positions() {

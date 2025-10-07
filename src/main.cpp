@@ -6,9 +6,8 @@
 #include "orthogonal/drawing_stats.hpp"
 #include "planarity/auslander_parter.hpp"
 
-void test_graph() {
-  const auto graph = load_graph_from_txt_file(("../grafo.txt"));
-  const std::optional<Embedding> embedding = embed_graph(*graph);
+void test_graph(UndirectedSimpleGraph& graph) {
+  const std::optional<Embedding> embedding = embed_graph(graph);
   if (embedding.has_value()) {
     std::cout << "Embedding found" << std::endl;
     embedding->print();
@@ -23,7 +22,7 @@ void test_graph() {
 }
 
 int main() {
-  const Config config("../config.txt");
+  const Config config("config.txt");
   const std::string& filename = config.get("output_svg");
   const auto graph = load_graph_from_txt_file(config.get("input_graph_file"));
   const DrawingResult result = make_orthogonal_drawing(*graph);
@@ -43,6 +42,6 @@ int main() {
             << "\n";
   std::cout << "Number of useless bends: " << result.number_of_useless_bends
             << "\n";
-  test_graph();
+  test_graph(*graph);
   return 0;
 }

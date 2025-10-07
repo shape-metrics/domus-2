@@ -66,11 +66,11 @@ std::vector<std::string> collect_txt_files(const std::string& folder_path) {
 double compute_stddev(const std::vector<int>& values) {
   if (values.size() <= 1) return 0.0;
   double mean = 0;
-  for (const auto& value : values) mean += value;
+  for (const int value : values) mean += value;
   const auto size = static_cast<double>(values.size());
   mean /= size;
   double variance = 0.0;
-  for (const auto& value : values) variance += (value - mean) * (value - mean);
-  variance /= (size - 1.0);
+  for (const int value : values) variance += (value - mean) * (value - mean);
+  variance /= size - 1.0;
   return std::sqrt(variance);
 }

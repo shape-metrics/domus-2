@@ -1,6 +1,7 @@
 #ifndef MY_EMBEDDING_HPP
 #define MY_EMBEDDING_HPP
 
+#include <ranges>
 #include <string>
 
 #include "core/graph/graph.hpp"
@@ -13,11 +14,11 @@ class Embedding {
   GraphEdgeHashSet m_edges_to_add;
 
  public:
-  explicit Embedding(const Graph& graph);
+  explicit Embedding(const UndirectedSimpleGraph &graph);
   void add_edge(int from_id, int to_id);
-  const CircularSequence<int>& get_adjacency_list(int node_id) const;
+  const CircularSequence<int> &get_adjacency_list(int node_id) const;
   auto get_nodes_ids() const {
-    return adjacency_list | std::views::transform([](const auto& pair) -> int {
+    return adjacency_list | std::views::transform([](const auto &pair) -> int {
              return pair.first;
            });
   }
@@ -28,14 +29,14 @@ class Embedding {
   void print() const;
 };
 
-size_t compute_number_of_faces_in_embedding(const Embedding& embedding);
+size_t compute_number_of_faces_in_embedding(const Embedding &embedding);
 
 int compute_embedding_genus(size_t number_of_nodes, size_t number_of_edges,
                             size_t number_of_faces,
                             size_t connected_components);
 
-int compute_embedding_genus(const Embedding& embedding);
+int compute_embedding_genus(const Embedding &embedding);
 
-bool is_embedding_planar(const Embedding& embedding);
+bool is_embedding_planar(const Embedding &embedding);
 
 #endif

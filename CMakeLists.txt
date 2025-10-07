@@ -5,7 +5,7 @@ project(DOMUS VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Set C++ standard
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Common source files
@@ -38,6 +38,7 @@ set(COMMON_SRCS
         src/planarity/auslander_parter.cpp
         src/planarity/embedding.cpp
         src/planarity/interlacement.cpp
+        src/core/graph/palm_tree.cpp
 )
 
 # Core library

@@ -1,7 +1,7 @@
 #################################
 # MAIN CONFIG
 #################################
-input_graph_file=../grafo.txt
+input_graph_file=generated-graphs/20/graph_68_n20_m31.txt
 output_svg=drawing.svg
 
 
@@ -19,6 +19,6 @@ graphs_generated_per_same_nodes_number=100
 #################################
 # COMPARISON TEST CONFIG
 #################################
-test_graphs_folder=../rome_graphs/
+test_graphs_folder=generated-graphs/
 output_result_filename=test_results.csv
 output_svgs_folder=output-svgs/

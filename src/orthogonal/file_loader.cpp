@@ -24,16 +24,16 @@ Shape load_shape_from_file(const std::string &filename) {
   throw std::runtime_error("Unable to open shape file: " + filename);
 }
 
-void save_shape_to_file(const Graph &graph, const Shape &shape,
+void save_shape_to_file(const DirectedSimpleGraph &graph, const Shape &shape,
                         const std::string &filename) {
   std::ofstream outfile(filename);
   if (outfile.is_open()) {
-    for (const auto &node : graph.get_nodes()) {
-      for (const auto &edge : node.get_edges()) {
-        const int neighbor_id = edge.get_to().get_id();
-        outfile << node.get_id() << " " << neighbor_id << " ";
+    for (const GraphNode *node : graph.get_nodes()) {
+      for (GraphEdge &edge : node->get_edges()) {
+        const int neighbor_id = edge.get_to_id();
+        outfile << node->get_id() << " " << neighbor_id << " ";
         outfile << direction_to_string(
-                       shape.get_direction(node.get_id(), neighbor_id))
+                       shape.get_direction(node->get_id(), neighbor_id))
                 << std::endl;
       }
     }

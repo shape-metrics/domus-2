@@ -1,12 +1,13 @@
 #include "planarity/embedding.hpp"
 
 #include <functional>
+#include <iostream>
 #include <stack>
 
 #include "core/graph/graphs_algorithms.hpp"
 
-Embedding::Embedding(const Graph& graph) {
-  for (const GraphNode& node : graph.get_nodes()) adjacency_list[node.get_id()];
+Embedding::Embedding(const UndirectedSimpleGraph &graph) {
+  for (const int node_id : graph.get_nodes_ids()) adjacency_list[node_id];
 }
 
 void Embedding::add_edge(const int from_id, const int to_id) {
@@ -24,14 +25,14 @@ void Embedding::add_edge(const int from_id, const int to_id) {
 
 bool Embedding::is_consistent() const { return m_edges_to_add.empty(); }
 
-const CircularSequence<int>& Embedding::get_adjacency_list(
+const CircularSequence<int> &Embedding::get_adjacency_list(
     const int node_id) const {
   return adjacency_list.at(node_id);
 }
 
 std::string Embedding::to_string() const {
   std::string result;
-  for (const auto& [node_id, neighbors] : adjacency_list) {
+  for (const auto &[node_id, neighbors] : adjacency_list) {
     result += "Node " + std::to_string(node_id) + " neighbors:";
     for (const int neighbor_id : neighbors)
       result += " " + std::to_string(neighbor_id);
@@ -46,7 +47,7 @@ size_t Embedding::total_number_of_edges() const { return number_of_edges_m; }
 
 void Embedding::print() const { std::cout << to_string(); }
 
-size_t compute_number_of_faces_in_embedding(const Embedding& embedding) {
+size_t compute_number_of_faces_in_embedding(const Embedding &embedding) {
   size_t number_of_faces = 0;
   GraphEdgeHashSet visited_edges;  // visited oriented edges
   for (int node_id : embedding.get_nodes_ids()) {
@@ -72,26 +73,27 @@ size_t compute_number_of_faces_in_embedding(const Embedding& embedding) {
   return number_of_faces;
 }
 
-bool is_embedding_planar(const Embedding& embedding) {
+bool is_embedding_planar(const Embedding &embedding) {
   return compute_embedding_genus(embedding) == 0;
 }
 
-size_t compute_number_of_connected_components(const Embedding& embedding) {
+size_t compute_number_of_connected_components(const Embedding &embedding) {
   if (!embedding.is_consistent())
     throw std::runtime_error("Embedding is not fully undirected");
   std::unordered_set<int> visited;
   size_t components = 0;
-  const std::function explore_component = [&](const int start_node_id) {
-    std::stack<int> stack;
-    stack.push(start_node_id);
-    while (!stack.empty()) {
-      const int node_id = stack.top();
-      stack.pop();
-      if (visited.insert(node_id).second)
-        for (const int neighbor_id : embedding.get_adjacency_list(node_id))
-          if (!visited.contains(neighbor_id)) stack.push(neighbor_id);
-    }
-  };
+  const std::function<void(int)> explore_component =
+      [&](const int start_node_id) {
+        std::stack<int> stack;
+        stack.push(start_node_id);
+        while (!stack.empty()) {
+          const int node_id = stack.top();
+          stack.pop();
+          if (visited.insert(node_id).second)
+            for (const int neighbor_id : embedding.get_adjacency_list(node_id))
+              if (!visited.contains(neighbor_id)) stack.push(neighbor_id);
+        }
+      };
   for (const int node_id : embedding.get_nodes_ids())
     if (!visited.contains(node_id)) {
       components++;
@@ -115,7 +117,7 @@ int compute_embedding_genus(const size_t number_of_nodes,
   return p - (f - e + n) / 2;
 }
 
-int compute_embedding_genus(const Embedding& embedding) {
+int compute_embedding_genus(const Embedding &embedding) {
   if (!embedding.is_consistent())
     throw std::runtime_error("Embedding is not fully undirected");
   const size_t number_of_nodes = embedding.size();

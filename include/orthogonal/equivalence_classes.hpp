@@ -19,23 +19,24 @@ class EquivalenceClasses {
   void set_class(int elem, int class_id);
   bool has_elem_a_class(int elem) const;
   int get_class_of_elem(int elem) const;
-  const std::unordered_set<int>& get_elems_of_class(int class_id) const;
+  const std::unordered_set<int> &get_elems_of_class(int class_id) const;
   std::string to_string() const;
   void print() const;
   auto get_all_classes() const {
     return m_class_to_elems |
            std::views::transform(
-               [](const auto& pair) -> int { return pair.first; });
+               [](const auto &pair) -> int { return pair.first; });
   }
 };
 
 std::pair<const EquivalenceClasses, const EquivalenceClasses>
-build_equivalence_classes(const Shape& shape, const Graph& graph);
+build_equivalence_classes(const Shape &shape, const UndirectedSimpleGraph &graph);
 
-std::tuple<std::unique_ptr<Graph>, std::unique_ptr<Graph>, GraphAttributes,
-           GraphAttributes>
-equivalence_classes_to_ordering(const EquivalenceClasses& equivalence_classes_x,
-                                const EquivalenceClasses& equivalence_classes_y,
-                                const Graph& graph, const Shape& shape);
+std::tuple<std::unique_ptr<DirectedSimpleGraph>, std::unique_ptr<DirectedSimpleGraph>,
+           GraphAttributes, GraphAttributes>
+equivalence_classes_to_ordering(const EquivalenceClasses &equivalence_classes_x,
+                                const EquivalenceClasses &equivalence_classes_y,
+                                const UndirectedSimpleGraph &graph,
+                                const Shape &shape);
 
 #endif

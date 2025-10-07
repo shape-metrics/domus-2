@@ -20,8 +20,9 @@
 const std::string unit_clauses_logs_file = "unit_clauses_logs.txt";
 std::mutex unit_clauses_logs_mutex;
 
-Shape result_to_shape(const Graph& graph, const std::vector<int>& numbers,
-                      VariablesHandler& handler) {
+Shape result_to_shape(const UndirectedSimpleGraph &graph,
+                      const std::vector<int> &numbers,
+                      VariablesHandler &handler) {
   for (const int var : numbers) {
     if (var > 0)
       handler.set_variable_value(var, true);
@@ -29,22 +30,23 @@ Shape result_to_shape(const Graph& graph, const std::vector<int>& numbers,
       handler.set_variable_value(-var, false);
   }
   Shape shape;
-  for (const auto& node : graph.get_nodes()) {
-    int i = node.get_id();
-    for (auto& edge : node.get_edges()) {
-      int j = edge.get_to().get_id();
-      shape.set_direction(i, j, handler.get_direction_of_edge(i, j));
+  for (const GraphNode *node : graph.get_nodes()) {
+    const int node_id = node->get_id();
+    for (const GraphEdge &edge : node->get_edges()) {
+      const int neighbor_id = edge.get_to_id();
+      shape.set_direction(node_id, neighbor_id,
+                          handler.get_direction_of_edge(node_id, neighbor_id));
     }
   }
   return shape;
 }
 
 std::pair<int, int> find_edges_to_split(
-    const std::vector<std::string>& proof_lines, std::mt19937& random_engine,
-    const VariablesHandler& handler) {
+    const std::vector<std::string> &proof_lines, std::mt19937 &random_engine,
+    const VariablesHandler &handler) {
   std::vector<int> unit_clauses;
   for (size_t i = proof_lines.size(); i > 0; i--) {
-    const std::string& line = proof_lines[i - 1];
+    const std::string &line = proof_lines[i - 1];
     // split line based on " "
     std::vector<int> tokens;
     std::string token;
@@ -78,33 +80,34 @@ std::pair<int, int> find_edges_to_split(
   return handler.get_edge_of_variable(variable);
 }
 
-std::optional<Shape> build_shape_or_add_corner(Graph& graph,
-                                               GraphAttributes& attributes,
-                                               std::vector<Cycle>& cycles,
-                                               std::mt19937& random_engine);
+std::optional<Shape> build_shape_or_add_corner(UndirectedSimpleGraph &graph,
+                                               GraphAttributes &attributes,
+                                               std::vector<Cycle> &cycles,
+                                               std::mt19937 &random_engine);
 
-Shape build_shape(Graph& graph, GraphAttributes& attributes,
-                  std::vector<Cycle>& cycles, const bool randomize) {
+Shape build_shape(UndirectedSimpleGraph &graph, GraphAttributes &attributes,
+                  std::vector<Cycle> &cycles, const bool randomize) {
   const size_t seed = randomize ? std::random_device{}() : 42;
   std::mt19937 random_engine(seed);
-  auto shape =
+  std::optional<Shape> shape =
       build_shape_or_add_corner(graph, attributes, cycles, random_engine);
   while (!shape.has_value())
     shape = build_shape_or_add_corner(graph, attributes, cycles, random_engine);
   return std::move(shape.value());
 }
 
-void add_corner_inside_edge(const int from_id, const int to_id, Graph& graph,
-                            GraphAttributes& attributes,
-                            std::vector<Cycle>& cycles) {
+void add_corner_inside_edge(const int from_id, const int to_id,
+                            UndirectedSimpleGraph &graph,
+                            GraphAttributes &attributes,
+                            std::vector<Cycle> &cycles) {
   if (!graph.has_edge(from_id, to_id))
     throw std::runtime_error("Error: The edge is not in the graph");
   const int new_node_id = graph.add_node().get_id();
   attributes.set_node_color(new_node_id, Color::RED);
-  graph.remove_undirected_edge(from_id, to_id);
-  graph.add_undirected_edge(from_id, new_node_id);
-  graph.add_undirected_edge(to_id, new_node_id);
-  for (Cycle& cycle : cycles) {
+  graph.remove_edge(from_id, to_id);
+  graph.add_edge(from_id, new_node_id);
+  graph.add_edge(to_id, new_node_id);
+  for (Cycle &cycle : cycles) {
     if (!cycle.has_node(from_id) || !cycle.has_node(to_id)) continue;
     const size_t from_pos = cycle.node_position(from_id);
     const size_t to_pos = cycle.node_position(to_id);
@@ -115,10 +118,10 @@ void add_corner_inside_edge(const int from_id, const int to_id, Graph& graph,
   }
 }
 
-std::optional<Shape> build_shape_or_add_corner(Graph& graph,
-                                               GraphAttributes& attributes,
-                                               std::vector<Cycle>& cycles,
-                                               std::mt19937& random_engine) {
+std::optional<Shape> build_shape_or_add_corner(UndirectedSimpleGraph &graph,
+                                               GraphAttributes &attributes,
+                                               std::vector<Cycle> &cycles,
+                                               std::mt19937 &random_engine) {
   VariablesHandler handler(graph);
   CnfBuilder cnf_builder{};
   cnf_builder.add_comment("constraints one direction per edge");
