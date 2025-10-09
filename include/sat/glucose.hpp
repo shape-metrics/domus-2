@@ -7,14 +7,13 @@
 enum class GlucoseResultType { SAT, UNSAT };
 
 struct GlucoseResult {
-  GlucoseResultType result;
-  std::vector<int> numbers;
-  std::vector<std::string> proof_lines;
-  [[nodiscard]] std::string to_string() const;
-  void print() const;
+    GlucoseResultType result;
+    std::vector<int> numbers;
+    std::vector<std::string> proof_lines;
+    [[nodiscard]] std::string to_string() const;
+    void print() const;
 };
 
-GlucoseResult launch_glucose(const std::string& conjunctive_normal_form_file,
-                             bool randomize);
+GlucoseResult launch_glucose(const std::string& conjunctive_normal_form_file, bool randomize);
 
 #endif

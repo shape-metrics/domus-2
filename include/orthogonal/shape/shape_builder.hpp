@@ -8,7 +8,9 @@
 #include "core/graph/graph.hpp"
 #include "orthogonal/shape/shape.hpp"
 
-Shape build_shape(UndirectedSimpleGraph &graph, GraphAttributes &attributes,
-                  std::vector<Cycle> &cycles, bool randomize = false);
+Shape build_shape(UndirectedSimpleGraph& graph,
+                  GraphAttributes& attributes,
+                  std::vector<Cycle>& cycles,
+                  bool randomize = false);
 
 #endif

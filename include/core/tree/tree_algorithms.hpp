@@ -6,10 +6,10 @@
 #include "core/graph/graph.hpp"
 #include "core/tree/tree.hpp"
 
-std::unique_ptr<Tree> build_spanning_tree(const UndirectedSimpleGraph &graph);
+std::unique_ptr<Tree> build_spanning_tree(const UndirectedSimpleGraph& graph);
 
-std::vector<int> get_path_from_root(const Tree &tree, int node);
+std::vector<int> get_path_from_root(const Tree& tree, int node);
 
-int compute_common_ancestor(const Tree &tree, int node1, int node2);
+int compute_common_ancestor(const Tree& tree, int node1, int node2);
 
 #endif

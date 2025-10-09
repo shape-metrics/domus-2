@@ -19,25 +19,25 @@ Direction opposite_direction(Direction direction);
 Direction rotate_90_degrees(Direction direction);
 
 constexpr std::array<Direction, 4> get_all_directions() {
-  return {Direction::LEFT, Direction::RIGHT, Direction::UP, Direction::DOWN};
+    return {Direction::LEFT, Direction::RIGHT, Direction::UP, Direction::DOWN};
 }
 
 class Shape {
-  std::unordered_map<std::pair<int, int>, Direction, int_pair_hash> m_shape;
+    std::unordered_map<std::pair<int, int>, Direction, int_pair_hash> m_shape;
 
- public:
-  void set_direction(int node_id_1, int node_id_2, Direction direction);
-  Direction get_direction(int node_id_1, int node_id_2) const;
-  bool contains(int node_id_1, int node_id_2) const;
-  bool is_up(int node_id_1, int node_id_2) const;
-  bool is_down(int node_id_1, int node_id_2) const;
-  bool is_right(int node_id_1, int node_id_2) const;
-  bool is_left(int i, int j) const;
-  bool is_horizontal(int node_id_1, int node_id_2) const;
-  bool is_vertical(int node_id_1, int node_id_2) const;
-  void remove_direction(int node_id_1, int node_id_2);
-  std::string to_string() const;
-  void print() const;
+  public:
+    void set_direction(int node_id_1, int node_id_2, Direction direction);
+    Direction get_direction(int node_id_1, int node_id_2) const;
+    bool contains(int node_id_1, int node_id_2) const;
+    bool is_up(int node_id_1, int node_id_2) const;
+    bool is_down(int node_id_1, int node_id_2) const;
+    bool is_right(int node_id_1, int node_id_2) const;
+    bool is_left(int i, int j) const;
+    bool is_horizontal(int node_id_1, int node_id_2) const;
+    bool is_vertical(int node_id_1, int node_id_2) const;
+    void remove_direction(int node_id_1, int node_id_2);
+    std::string to_string() const;
+    void print() const;
 };
 
 #endif

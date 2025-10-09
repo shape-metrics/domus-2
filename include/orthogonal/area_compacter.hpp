@@ -4,6 +4,6 @@
 #include "core/graph/attributes.hpp"
 #include "core/graph/graph.hpp"
 
-void compact_area(const UndirectedSimpleGraph &graph, GraphAttributes &attributes);
+void compact_area(const UndirectedSimpleGraph& graph, GraphAttributes& attributes);
 
 #endif

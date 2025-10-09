@@ -5,27 +5,27 @@
 #include <vector>
 
 enum class CnfRowType {
-  CLAUSE,
-  COMMENT,
+    CLAUSE,
+    COMMENT,
 };
 
 struct CnfRow {
-  CnfRowType m_type;
-  std::vector<int> m_clause;
-  std::string m_comment;
+    CnfRowType m_type;
+    std::vector<int> m_clause;
+    std::string m_comment;
 };
 
 class CnfBuilder {
-  int m_num_vars = 0;
-  int m_num_clauses = 0;
-  std::vector<CnfRow> m_rows;
+    int m_num_vars = 0;
+    int m_num_clauses = 0;
+    std::vector<CnfRow> m_rows;
 
- public:
-  void add_clause(std::vector<int> clause);
-  void add_comment(const std::string& comment);
-  [[nodiscard]] int get_number_of_variables() const;
-  [[nodiscard]] int get_number_of_clauses() const;
-  void convert_to_cnf(const std::string& file_path) const;
+  public:
+    void add_clause(std::vector<int> clause);
+    void add_comment(const std::string& comment);
+    [[nodiscard]] int get_number_of_variables() const;
+    [[nodiscard]] int get_number_of_clauses() const;
+    void convert_to_cnf(const std::string& file_path) const;
 };
 
 #endif
