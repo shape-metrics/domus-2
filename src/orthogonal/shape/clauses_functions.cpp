@@ -1,7 +1,7 @@
 #include "orthogonal/shape/clauses_functions.hpp"
 
 void add_constraints_at_most_one_is_true(
-    CnfBuilder& cnf_builder, const int var_1, const int var_2, const int var_3, const int var_4) {
+    Cnf& cnf_builder, const int var_1, const int var_2, const int var_3, const int var_4) {
     // at most one is true (at least three are false)
     // for every possible pair, at least one is false
     cnf_builder.add_clause({-var_1, -var_2});
@@ -13,13 +13,13 @@ void add_constraints_at_most_one_is_true(
 }
 
 void add_constraints_one_direction_per_edge(
-    CnfBuilder& cnf_builder, int up, int down, int right, int left) {
+    Cnf& cnf_builder, int up, int down, int right, int left) {
     cnf_builder.add_clause({up, down, right, left}); // at least one is true
     add_constraints_at_most_one_is_true(cnf_builder, up, down, left, right);
 }
 
 void add_constraints_one_direction_per_edge(const UndirectedSimpleGraph& graph,
-                                            CnfBuilder& cnf_builder,
+                                            Cnf& cnf_builder,
                                             const VariablesHandler& handler) {
     for (const GraphNode* node : graph.get_nodes()) {
         const int node_id = node->get_id();
@@ -36,7 +36,7 @@ void add_constraints_one_direction_per_edge(const UndirectedSimpleGraph& graph,
     }
 }
 
-void add_clause_at_least_one_in_direction(CnfBuilder& cnf_builder,
+void add_clause_at_least_one_in_direction(Cnf& cnf_builder,
                                           const VariablesHandler& handler,
                                           const GraphNode& node,
                                           Direction direction) {
@@ -49,7 +49,7 @@ void add_clause_at_least_one_in_direction(CnfBuilder& cnf_builder,
     cnf_builder.add_clause(clause);
 }
 
-void add_one_edge_per_direction_clauses(CnfBuilder& cnf_builder,
+void add_one_edge_per_direction_clauses(Cnf& cnf_builder,
                                         const VariablesHandler& handler,
                                         const Direction direction,
                                         const GraphNode& node) {
@@ -76,7 +76,7 @@ void add_one_edge_per_direction_clauses(CnfBuilder& cnf_builder,
     }
 }
 
-void add_cycles_constraints(CnfBuilder& cnf_builder,
+void add_cycles_constraints(Cnf& cnf_builder,
                             const std::vector<Cycle>& cycles,
                             const VariablesHandler& handler) {
     for (const Cycle& cycle : cycles) {
@@ -99,7 +99,7 @@ void add_cycles_constraints(CnfBuilder& cnf_builder,
 }
 
 void add_nodes_constraints(const UndirectedSimpleGraph& graph,
-                           CnfBuilder& cnf_builder,
+                           Cnf& cnf_builder,
                            const VariablesHandler& handler) {
     for (const GraphNode* node_ptr : graph.get_nodes()) {
         const GraphNode& node = *node_ptr;

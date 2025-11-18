@@ -38,7 +38,6 @@ void load_graph_from_txt_file(const std::string& filename, UndirectedSimpleGraph
             }
         }
     }
-    infile.close();
 }
 
 void save_graph_to_file(const UndirectedSimpleGraph& graph, const std::string& filename) {
@@ -50,7 +49,5 @@ void save_graph_to_file(const UndirectedSimpleGraph& graph, const std::string& f
         outfile << node_id << '\n';
     outfile << "edges:\n";
     for (const GraphEdge& edge : graph.get_edges())
-        if (edge.get_from_id() < edge.get_to_id())
-            outfile << edge.get_from_id() << ' ' << edge.get_to_id() << '\n';
-    outfile.close();
+        outfile << edge.get_from_id() << ' ' << edge.get_to_id() << '\n';
 }

@@ -80,6 +80,7 @@ void make_stats_of_graphs_in_folder(const std::string& folder_path,
                     std::lock_guard<std::mutex> lock(input_output_lock);
                     std::cerr << "Graph " << graph_filename << " is not connected, skipping."
                               << std::endl;
+                    graph->print();
                     continue;
                 }
                 {

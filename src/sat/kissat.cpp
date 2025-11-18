@@ -1,0 +1,121 @@
+#include "sat/kissat.hpp"
+
+#include <fstream>
+#include <iostream>
+#include <random>
+#include <sstream>
+#include <stdexcept>
+#include <stdio.h>
+#include <stdlib.h>
+
+extern "C" {
+#include "kissat/src/file.h"
+#include "kissat/src/kissat.h"
+#include "kissat/src/proof.h"
+}
+
+#include "core/utils.hpp"
+
+std::string SatSolverResult::to_string() const {
+    std::string r = result == SatSolverResultType::SAT ? "SAT" : "UNSAT";
+    std::string numbers_str = "Numbers: ";
+    for (int num : numbers)
+        numbers_str += std::to_string(num) + " ";
+    std::string proof_str = "Proof:\n";
+    for (const std::string& line : proof_lines)
+        proof_str += line + "\n";
+    return r + "\n" + numbers_str + "\n" + proof_str;
+}
+
+void SatSolverResult::print() const { std::cout << to_string() << std::endl; }
+
+struct MemoryFile {
+    char* buffer = NULL;
+    size_t size = 0;
+    FILE* mem = NULL;
+    MemoryFile() {
+        mem = open_memstream(&buffer, &size);
+        if (!mem) {
+            perror("open_memstream");
+            throw std::runtime_error("Failed to initialize MemoryFile");
+        }
+    }
+    ~MemoryFile() {
+        fclose(mem);
+        free(buffer);
+    }
+};
+
+class KissatSolver {
+  private:
+    kissat* solver = nullptr;
+    std::string proof{};
+
+  public:
+    KissatSolver() {
+        solver = kissat_init();
+        if (!solver)
+            throw std::runtime_error("Failed to initialize Kissat solver");
+    }
+
+    ~KissatSolver() {
+        if (solver)
+            kissat_release(solver);
+    }
+
+    void add_clause(const std::vector<int>& clause) {
+        for (int lit : clause)
+            kissat_add(solver, lit);
+        kissat_add(solver, 0); // terminate clause
+    }
+
+    bool solve() {
+        file proof_file;
+        MemoryFile memory_file;
+        proof_file.file = memory_file.mem;
+        proof_file.close = true;
+        proof_file.reading = false;
+        proof_file.compressed = false;
+        proof_file.path = NULL;
+        proof_file.bytes = 0;
+        kissat_init_proof(solver, &proof_file, false);
+        int res = kissat_solve(solver);
+        kissat_release_proof(solver);
+        proof = memory_file.buffer;
+        if (res == 10)
+            return true;
+        if (res == 20)
+            return false;
+        throw std::runtime_error("Solver returned UNKNOWN");
+    }
+
+    bool value(int lit) const { return kissat_value(solver, lit) > 0; }
+
+    const std::string& get_proof() const { return proof; }
+};
+
+SatSolverResult launch_kissat(const Cnf& cnf) {
+    KissatSolver solver;
+    for (const CnfRow& row : cnf.get_rows())
+        if (row.m_type == CnfRowType::CLAUSE)
+            solver.add_clause(row.m_clause);
+    bool is_sat = solver.solve();
+    SatSolverResult result;
+    if (is_sat) {
+        result.result = SatSolverResultType::SAT;
+        for (int var = 1; var <= cnf.get_number_of_variables(); ++var) {
+            if (solver.value(var))
+                result.numbers.push_back(var);
+            else
+                result.numbers.push_back(-var);
+        }
+    } else {
+        result.result = SatSolverResultType::UNSAT;
+        std::string proof_str = solver.get_proof();
+        std::istringstream iss(proof_str);
+        std::string line;
+        while (std::getline(iss, line))
+            result.proof_lines.push_back(line);
+    }
+    return result;
+}

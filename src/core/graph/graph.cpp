@@ -277,11 +277,9 @@ void UndirectedSimpleGraph::remove_edge(const int from_id, const int to_id) {
 }
 
 int UndirectedSimpleGraph::get_edge_id(const int from_id, const int to_id) const {
-    const auto& ids_1 = get_edgeids(from_id, to_id);
-    const auto& ids_2 = get_edgeids(from_id, to_id);
-    if (ids_1.size() == 1)
-        return *ids_1.begin();
-    if (ids_2.size() == 1)
-        return *ids_2.begin();
+    if (get_edge_count(from_id, to_id) == 1)
+        return *get_edgeids(from_id, to_id).begin();
+    if (get_edge_count(to_id, from_id) == 1)
+        return *get_edgeids(to_id, from_id).begin();
     throw std::runtime_error("UndirectedSimpleGraph::get_edge_id: edge not found");
 }

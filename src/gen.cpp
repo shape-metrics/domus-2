@@ -4,6 +4,7 @@
 #include "config/config.hpp"
 #include "core/graph/file_loader.hpp"
 #include "core/graph/generators.hpp"
+#include "core/graph/graphs_algorithms.hpp"
 
 int main() {
     const Config config("config.txt");
@@ -44,6 +45,8 @@ int main() {
             std::string filename = sub_folder + "graph_" + std::to_string(i) + "_n" +
                                    std::to_string(number_of_nodes) + "_m" +
                                    std::to_string(number_of_edges) + ".txt";
+            if (!is_graph_connected(*graph))
+                throw std::runtime_error("Generated graph is not connected!");
             save_graph_to_file(*graph, filename);
             ++number_of_generated_graphs;
         }

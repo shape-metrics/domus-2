@@ -8,10 +8,21 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# External project for Kissat SAT solver
+include(ExternalProject)
+
+ExternalProject_Add(kissat_project
+    PREFIX ${CMAKE_BINARY_DIR}/kissat
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/sat/kissat
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND make -C ${CMAKE_SOURCE_DIR}/src/sat/kissat
+    INSTALL_COMMAND ""
+)
+
 # Common source files
 set(COMMON_SRCS
-        src/sat/glucose.cpp
-        src/sat/cnf_builder.cpp
+        src/sat/kissat.cpp
+        src/sat/cnf.cpp
         src/orthogonal/shape/shape.cpp
         src/orthogonal/shape/shape_builder.cpp
         src/orthogonal/shape/variables_handler.cpp
@@ -45,6 +56,18 @@ set(COMMON_SRCS
 add_library(core STATIC ${COMMON_SRCS})
 target_include_directories(core PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
+# Tell CMake about the library file produced by the Makefile
+add_library(kissat STATIC IMPORTED)
+set_target_properties(kissat PROPERTIES
+    IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/src/sat/kissat/build/libkissat.a
+)
+add_dependencies(kissat kissat_project)
+
+# Include headers
+target_include_directories(kissat INTERFACE
+    ${CMAKE_SOURCE_DIR}/src/sat/kissat/src
+)
+
 # Optimization flags for core
 target_compile_options(core PRIVATE)
 
@@ -76,9 +99,9 @@ add_executable(stats src/stats.cpp)
 add_executable(gen src/gen.cpp)
 
 # Link core library
-target_link_libraries(main PRIVATE core)
-target_link_libraries(stats PRIVATE core)
-target_link_libraries(gen PRIVATE core)
+target_link_libraries(main PRIVATE core kissat)
+target_link_libraries(stats PRIVATE core kissat)
+target_link_libraries(gen PRIVATE core kissat)
 
 # Also apply the same warnings to the executables
 foreach (target main stats gen)

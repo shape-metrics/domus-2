@@ -14,8 +14,8 @@
 #include "core/tree/tree_algorithms.hpp"
 #include "orthogonal/shape/clauses_functions.hpp"
 #include "orthogonal/shape/variables_handler.hpp"
-#include "sat/cnf_builder.hpp"
-#include "sat/glucose.hpp"
+#include "sat/cnf.hpp"
+#include "sat/kissat.hpp"
 
 const std::string unit_clauses_logs_file = "unit_clauses_logs.txt";
 std::mutex unit_clauses_logs_mutex;
@@ -44,7 +44,8 @@ Shape result_to_shape(const UndirectedSimpleGraph& graph,
 
 std::pair<int, int> find_edges_to_split(const std::vector<std::string>& proof_lines,
                                         std::mt19937& random_engine,
-                                        const VariablesHandler& handler) {
+                                        const VariablesHandler& handler,
+                                        int number_of_variables) {
     std::vector<int> unit_clauses;
     for (size_t i = proof_lines.size(); i > 0; i--) {
         const std::string& line = proof_lines[i - 1];
@@ -64,8 +65,11 @@ std::pair<int, int> find_edges_to_split(const std::vector<std::string>& proof_li
         }
         if (token != "0")
             throw std::runtime_error("Invalid proof line");
-        if (tokens.size() == 1)
-            unit_clauses.push_back(tokens[0]);
+        if (tokens.size() == 1) {
+            int unit_clause = tokens[0];
+            if (std::abs(unit_clause) <= number_of_variables)
+                unit_clauses.push_back(unit_clause);
+        }
     }
     if (unit_clauses.empty())
         throw std::runtime_error("Could not find the edge to remove");
@@ -131,19 +135,17 @@ std::optional<Shape> build_shape_or_add_corner(UndirectedSimpleGraph& graph,
                                                std::vector<Cycle>& cycles,
                                                std::mt19937& random_engine) {
     VariablesHandler handler(graph);
-    CnfBuilder cnf_builder{};
-    cnf_builder.add_comment("constraints one direction per edge");
-    add_constraints_one_direction_per_edge(graph, cnf_builder, handler);
-    cnf_builder.add_comment("constraints nodes");
-    add_nodes_constraints(graph, cnf_builder, handler);
-    cnf_builder.add_comment("constraints cycles");
-    add_cycles_constraints(cnf_builder, cycles, handler);
-    const std::string cnf = get_unique_filename("cnf");
-    cnf_builder.convert_to_cnf(cnf);
-    const auto [result, numbers, proof_lines] = launch_glucose(cnf, false);
-    remove(cnf.c_str());
-    if (result == GlucoseResultType::UNSAT) {
-        const auto [from_id, to_id] = find_edges_to_split(proof_lines, random_engine, handler);
+    Cnf cnf{};
+    // cnf.add_comment("constraints one direction per edge");
+    add_constraints_one_direction_per_edge(graph, cnf, handler);
+    // cnf.add_comment("constraints nodes");
+    add_nodes_constraints(graph, cnf, handler);
+    // cnf.add_comment("constraints cycles");
+    add_cycles_constraints(cnf, cycles, handler);
+    const auto [result, numbers, proof_lines] = launch_kissat(cnf);
+    if (result == SatSolverResultType::UNSAT) {
+        const auto [from_id, to_id] =
+            find_edges_to_split(proof_lines, random_engine, handler, cnf.get_number_of_variables());
         add_corner_inside_edge(from_id, to_id, graph, attributes, cycles);
         return std::nullopt;
     }

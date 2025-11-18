@@ -448,6 +448,8 @@ compute_bipartition(const UndirectedSimpleGraph& graph) {
 }
 
 std::optional<Cycle> find_a_cycle_in_graph(const UndirectedSimpleGraph& graph) {
+    if (graph.size() <= 2)
+        return std::nullopt;
     std::unordered_set<int> visited;
     std::unordered_map<int, int> parent;
     for (const GraphNode* start_node : graph.get_nodes()) {

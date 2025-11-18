@@ -1,7 +1,7 @@
 #################################
 # MAIN CONFIG
 #################################
-input_graph_file=generated-graphs/20/graph_68_n20_m31.txt
+input_graph_file=generated-graphs/60/graph_100_n60_m105.txt
 output_svg=drawing.svg
 
 

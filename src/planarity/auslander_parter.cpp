@@ -336,9 +336,16 @@ Embedding merge_segments_embeddings(const UndirectedSimpleGraph& component,
 
 std::optional<Embedding> embed_biconnected_component(const UndirectedSimpleGraph& component);
 
+#include <iostream>
+
 std::optional<Embedding> embed_biconnected_component(const UndirectedSimpleGraph& component,
                                                      const Cycle& cycle) {
+
+    std::cout << "embedding biconnected component\n";
+    component.print();
+    cycle.print();
     const std::vector<Segment> segments = compute_segments(component, cycle);
+    std::cout << "computed segments\n";
     if (segments.empty()) // the entire biconnected component is a cycle
         return base_case_graph(component);
     if (segments.size() == 1) {
@@ -346,7 +353,10 @@ std::optional<Embedding> embed_biconnected_component(const UndirectedSimpleGraph
         if (is_segment_a_path(segment))
             return base_case_component(component, cycle);
         // the chosen cycle is bad
-        return embed_biconnected_component(component, make_cycle_good(cycle, segment));
+        Cycle new_cycle = make_cycle_good(cycle, segment);
+        std::cout << "changed cycle to make it good\n";
+        new_cycle.print();
+        return embed_biconnected_component(component, new_cycle);
     }
     const std::unique_ptr<UndirectedSimpleGraph> interlacement_graph =
         compute_interlacement_graph(segments, cycle);
@@ -362,6 +372,7 @@ std::optional<Embedding> embed_biconnected_component(const UndirectedSimpleGraph
             return std::nullopt;
         embeddings.push_back(std::move(embedding.value()));
     }
+    std::cout << "embedded biconnected component\n";
     return merge_segments_embeddings(component,
                                      cycle,
                                      embeddings,
@@ -376,12 +387,15 @@ std::optional<Embedding> embed_biconnected_component(const UndirectedSimpleGraph
     return base_case_graph(component);
 }
 
+#include <iostream>
+
 std::optional<Embedding> embed_graph(const UndirectedSimpleGraph& graph) {
     if (graph.size() < 4)
         return base_case_graph(graph);
     if (graph.get_number_of_edges() / 2 > 3 * graph.size() - 6)
         return std::nullopt;
     const BiconnectedComponents bic_comps = compute_biconnected_components(graph);
+    std::cout << "daje\n";
     std::vector<Embedding> embeddings;
     for (const auto& component : bic_comps.get_components()) {
         std::optional<Embedding> embedding = embed_biconnected_component(*component);
@@ -389,5 +403,6 @@ std::optional<Embedding> embed_graph(const UndirectedSimpleGraph& graph) {
             return std::nullopt;
         embeddings.push_back(std::move(embedding.value()));
     }
+    std::cout << "daje2\n";
     return merge_biconnected_components(graph, bic_comps, embeddings);
 }
