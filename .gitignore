@@ -22,4 +22,3 @@ libcore.a
 test_results.csv
 CMakeDoxy*
 /cmake-*
-/kissat

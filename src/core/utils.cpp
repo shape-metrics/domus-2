@@ -22,9 +22,11 @@ std::string get_unique_filename(const std::string& base_filename, const std::str
     return filename_template;
 }
 
+#if defined(__linux__) || defined(__APPLE__)
 std::string get_unique_filename(const std::string& base_filename) {
     return get_unique_filename(base_filename, TEMPORARY_FOLDER);
 }
+#endif
 
 void save_string_to_file(const std::string& filename, const std::string& content) {
     std::ofstream outfile(filename);
