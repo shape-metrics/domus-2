@@ -18,6 +18,7 @@ compile_commands.json
 cnf_logs.txt
 unit_clauses_logs.txt
 libcore.a
+libkissat.a
 /rome_graphs
 test_results.csv
 CMakeDoxy*

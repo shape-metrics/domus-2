@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graph Embedder</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="topnav">
+    <span>DOMUS</span>
+  </div>
+
+  <div id="control-panel">
+    <div>
+      <label for="fileInput" class="custom-file-upload" id="graph-upload">
+        Upload Graph
+      </label>
+      <input type="file" id="fileInput">
+    </div>
+    <div>
+      <button class="button" onclick="embed()">Compute Embedding</button>
+    </div>
+  </div>
+
+  <div id="drawings-container">
+    <div class="svg-container">
+      <div id="embedding-svg"></div>
+      <div class="download-buttons">
+        <button class="button disabled" disabled id="download-embedding">Download Embedding</button>
+        <button class="button disabled download-svg" id="download-svg-id" disabled>Download SVG</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>By Giordano Andreola</p>
+  </footer>
+
+  <script>
+    function loadFile(fileName, event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const contents = e.target.result;
+          FS.writeFile(fileName, contents);
+        };
+        reader.readAsText(file);
+      }
+    }
+
+    function visualizeSvg(fileName, svgElement) {
+      try {
+        const svgContent = FS.readFile(fileName, { encoding: 'utf8' });
+        svgElement.innerHTML = svgContent;
+      } catch (e) {
+        console.error('Error loading file:', e);
+      }
+    }
+
+    const sefeSvgOutput = document.getElementById('embedding-svg');
+
+    const inputLabel = document.getElementById('graph-upload');
+    const fileInput = document.getElementById('fileInput');
+    fileInput.addEventListener('change', (event) => {
+      loadFile('/input.txt', event);
+      inputLabel.textContent = event.target.files[0].name;
+    });
+
+    function writeFile(fileName, content) {
+      try {
+        FS.writeFile(fileName, content);
+        console.log(`File ${fileName} written successfully.`);
+      } catch (e) {
+        console.error('Error writing file:', e);
+      }
+    }
+
+    function embed() {
+      let value = Module.ccall('compute_orthogonal_drawing', null, [], []);
+      visualizeSvg('/output.svg', sefeSvgOutput);
+      const buttons = document.getElementsByClassName('button');
+      Array.from(buttons).forEach((button) => {
+        button.disabled = false;
+        button.classList.add('enabled');
+      });
+    }
+
+    const svgDownload = document.getElementById('download-svg-id');
+    svgDownload.addEventListener('click', (_) => {
+      const svgContent = document.getElementById('embedding-svg').innerHTML;
+      const svgFileName = "embedding.svg";
+      const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = svgFileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    const embeddingDownload = document.getElementById('download-embedding');
+    embeddingDownload.addEventListener('click', (_) => {
+      const embeddingContent = FS.readFile('/embedding.txt', { encoding: 'utf8' });
+      const embeddingFileName = "embedding.txt";
+      const blob = new Blob([embeddingContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = embeddingFileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  </script>
+  <script src="domus.js"></script>
+</body>
+
+</html>

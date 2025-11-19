@@ -12,22 +12,19 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     message(STATUS ">>> Building DOMUS + KISSAT for WebAssembly")
 
     set(BUILDING_WASM TRUE)
-
     # JS output (main.js + main.wasm)
     set(CMAKE_EXECUTABLE_SUFFIX ".js")
 
-    # Common flags
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sWASM=1 -sALLOW_MEMORY_GROWTH=1")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -sALLOW_MEMORY_GROWTH=1")
+    # compiler flags
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
 
 else()
     set(BUILDING_WASM FALSE)
 endif()
 
 #====================================================
-# Build Kissat normally on native, or via EMCC on WASM
+# Kissat source files
 #====================================================
-# "-DNDEBUG -DQUIET"
 
 file(GLOB KISSAT_SRC
     ${CMAKE_SOURCE_DIR}/src/sat/kissat/src/*.c
@@ -111,11 +108,23 @@ apply_warnings(core)
 # Executables
 #======================================
 
-add_executable(main src/main.cpp)
-add_executable(stats src/stats.cpp)
-add_executable(gen src/gen.cpp)
+if (BUILDING_WASM)
+    add_executable(domus src/domus.cpp)
+    target_link_libraries(domus PRIVATE core kissat)
+    apply_warnings(domus)
+    target_link_options(domus PRIVATE
+        "-sEXPORTED_FUNCTIONS=['_compute_orthogonal_drawing']"
+        "-sEXPORTED_RUNTIME_METHODS=['ccall','cwrap', 'FS', 'UTF8ToString']"
+        "-sALLOW_MEMORY_GROWTH=1"
+        "-sWASM=1"
+    )
+else()
+    add_executable(main src/main.cpp)
+    add_executable(stats src/stats.cpp)
+    add_executable(gen src/gen.cpp)
 
-foreach(target main stats gen)
-    target_link_libraries(${target} PRIVATE core kissat)
-    apply_warnings(${target})
-endforeach()
+    foreach(target main stats gen)
+        target_link_libraries(${target} PRIVATE core kissat)
+        apply_warnings(${target})
+    endforeach()
+endif()
