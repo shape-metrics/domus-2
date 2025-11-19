@@ -130,11 +130,15 @@ void add_corner_inside_edge(const int from_id,
     }
 }
 
+#include <iostream>
+
 std::optional<Shape> build_shape_or_add_corner(UndirectedSimpleGraph& graph,
                                                GraphAttributes& attributes,
                                                std::vector<Cycle>& cycles,
                                                std::mt19937& random_engine) {
+    std::cout << "Building shape\n";
     VariablesHandler handler(graph);
+    std::cout << "building cnf\n";
     Cnf cnf{};
     // cnf.add_comment("constraints one direction per edge");
     add_constraints_one_direction_per_edge(graph, cnf, handler);
@@ -142,6 +146,7 @@ std::optional<Shape> build_shape_or_add_corner(UndirectedSimpleGraph& graph,
     add_nodes_constraints(graph, cnf, handler);
     // cnf.add_comment("constraints cycles");
     add_cycles_constraints(cnf, cycles, handler);
+    std::cout << "cnf built\n";
     const auto [result, numbers, proof_lines] = launch_kissat(cnf);
     if (result == SatSolverResultType::UNSAT) {
         const auto [from_id, to_id] =
