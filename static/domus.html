@@ -29,7 +29,6 @@
     <div class="svg-container">
       <div id="embedding-svg"></div>
       <div class="download-buttons">
-        <button class="button disabled" disabled id="download-embedding">Download Embedding</button>
         <button class="button disabled download-svg" id="download-svg-id" disabled>Download SVG</button>
       </div>
     </div>
@@ -98,21 +97,6 @@
       const a = document.createElement('a');
       a.href = url;
       a.download = svgFileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    });
-
-    const embeddingDownload = document.getElementById('download-embedding');
-    embeddingDownload.addEventListener('click', (_) => {
-      const embeddingContent = FS.readFile('/embedding.txt', { encoding: 'utf8' });
-      const embeddingFileName = "embedding.txt";
-      const blob = new Blob([embeddingContent], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = embeddingFileName;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
