@@ -84,7 +84,7 @@ input[type="file"] {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 3rem;
+    margin-top: 1.5rem;
 }
 
 #control-panel div {
@@ -97,7 +97,7 @@ input[type="file"] {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    margin-top: 3rem;
+    margin-top: 2rem;
 }
 
 svg {
@@ -152,4 +152,25 @@ svg {
     display: block;
     width: 100%;
     height: 100%;
+}
+
+#example-graphs-container {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+form {
+    display: inline-block;
+    margin-left: 2rem;
+}
+
+form label {
+    font-size: 1.4rem;
+    margin-right: 1rem;
+}
+
+form select {
+    font-size: 1.4rem;
+    padding: 0.3rem;
+    margin-right: 1rem;
 }

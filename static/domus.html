@@ -12,7 +12,14 @@
   <div class="topnav">
     <span>DOMUS</span>
   </div>
-
+  <div id="example-graphs-container">
+    <form action="#">
+    <label for="example-graphs">Example Graphs</label>
+    <select name="example-graphs" id="example-graphs"></select>
+    <input type="submit" value="Use" class="button" />
+  </form>
+  <button class="button" id="download-example-button" onclick="downloadExample()">Download Example</button>
+  </div>
   <div id="control-panel">
     <div>
       <label for="fileInput" class="custom-file-upload" id="graph-upload">
@@ -29,12 +36,52 @@
     <div class="svg-container">
       <div id="embedding-svg"></div>
       <div class="download-buttons">
+        <button class="button disabled download-graphml" id="download-graphml-id" disabled>Download GraphML</button>
         <button class="button disabled download-svg" id="download-svg-id" disabled>Download SVG</button>
       </div>
     </div>
   </div>
-
   <script>
+    var Module = {
+      onRuntimeInitialized: function() {
+        // Populate example graphs dropdown
+        const exampleGraphs = Module.FS.readdir('/example-graphs').filter(f => f.endsWith('.txt'));
+        const select = document.getElementById('example-graphs');
+        exampleGraphs.forEach((graphFile) => {
+          const option = document.createElement('option');
+          option.value = graphFile;
+          option.textContent = graphFile;
+          select.appendChild(option);
+        });
+        const form = document.querySelector('form');
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
+          const selectedGraph = select.value;
+          const inputLabel = document.getElementById('graph-upload');
+          inputLabel.textContent = selectedGraph;
+          const graphPath = `/example-graphs/${selectedGraph}`;
+          const graphContent = Module.FS.readFile(graphPath, { encoding: 'utf8' });
+          Module.FS.writeFile('/input.txt', graphContent);
+        });
+      }
+    };
+
+    function downloadExample() {
+      const select = document.getElementById('example-graphs');
+      const selectedGraph = select.value;
+      const graphPath = `/example-graphs/${selectedGraph}`;
+      const graphContent = FS.readFile(graphPath, { encoding: 'utf8' });
+      const blob = new Blob([graphContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = selectedGraph;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
     function loadFile(fileName, event) {
       const file = event.target.files[0];
       if (file) {
@@ -139,6 +186,25 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+    });
+
+    const graphmlDownload = document.getElementById('download-graphml-id');
+    graphmlDownload.addEventListener('click', (_) => {
+      try {
+        const graphmlContent = FS.readFile('/output.graphml', { encoding: 'utf8' });
+        const graphmlFileName = "embedding.graphml";
+        const blob = new Blob([graphmlContent], { type: 'application/xml' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = graphmlFileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        console.error('Error downloading GraphML file:', e);
+      }
     });
   </script>
   <script src="domus.js"></script>

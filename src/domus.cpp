@@ -12,6 +12,7 @@ void compute_orthogonal_drawing() {
     const auto graph = load_graph_from_txt_file("input.txt");
     const DrawingResult result = make_orthogonal_drawing(*graph);
     make_svg(*result.augmented_graph, result.attributes, "output.svg");
+    save_graph_to_graphml_file(*result.augmented_graph, result.attributes, "output.graphml");
     // const OrthogonalStats stats = compute_all_orthogonal_stats(result);
     // std::cout << "Area: " << stats.area << "\n";
     // std::cout << "Crossings: " << stats.crossings << "\n";

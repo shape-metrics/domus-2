@@ -117,6 +117,7 @@ if (BUILDING_WASM)
         "-sEXPORTED_RUNTIME_METHODS=['ccall','cwrap', 'FS', 'UTF8ToString']"
         "-sALLOW_MEMORY_GROWTH=1"
         "-sWASM=1"
+        "--preload-file" "${CMAKE_SOURCE_DIR}/example-graphs@/example-graphs"
     )
 else()
     add_executable(main src/main.cpp)
