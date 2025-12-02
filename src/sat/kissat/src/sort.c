@@ -76,23 +76,19 @@ move_smallest_literal_to_front (kissat *solver, const value *const values,
   return u;
 }
 
-#ifdef INLINE_SORT
-static inline
-#endif
-    void
-    kissat_sort_literals (kissat *solver,
-#ifdef INLINE_SORT
+static inline void kissat_sort_literals_inline (kissat *solver,
                           const value *const values,
                           const assigned *assigned,
-#endif
                           unsigned size, unsigned *lits) {
-#ifndef INLINE_SORT
-  const value *const values = solver->values;
-  const assigned *const assigned = solver->assigned;
-#endif
   value u = move_smallest_literal_to_front (solver, values, assigned, false,
                                             0, size, lits);
   if (size > 2)
     move_smallest_literal_to_front (solver, values, assigned, (u >= 0), 1,
                                     size, lits);
+}
+
+static inline void kissat_sort_literals (kissat *solver, unsigned size, unsigned *lits) {
+  const value *const values = solver->values;
+  const assigned *const assigned = solver->assigned;
+  kissat_sort_literals_inline (solver, values, assigned, size, lits);
 }

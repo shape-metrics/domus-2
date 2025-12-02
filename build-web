@@ -1,0 +1,17 @@
+#!/bin/bash
+
+echo -e "DELETING FILES"
+rm -f static/domus.js
+rm -f static/domus.wasm
+rm -f build/domus.js
+rm -f build/domus.wasm
+
+echo -e "\n\nBUILDING FILES"
+emcmake cmake -B build
+cmake --build build -j8
+
+echo -e "\n\nMOVING FILES"
+mv build/domus.js static/
+mv build/domus.wasm static/
+
+echo -e "\n\nCOMPLETE"

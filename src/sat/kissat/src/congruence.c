@@ -390,7 +390,7 @@ static size_t reduce_hash (unsigned hash, size_t size, size_t size2) {
   return res;
 }
 
-#define MAX_HASH_TABLE_SIZE ((size_t) 1 << 32)
+#define MAX_HASH_TABLE_SIZE ((size_t) 1 << 30)
 
 static bool closure_hash_table_is_full (closure *closure) {
   if (closure->hash.size == MAX_HASH_TABLE_SIZE)

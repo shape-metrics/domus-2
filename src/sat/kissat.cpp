@@ -64,10 +64,8 @@ class KissatSolver {
     }
 
     void add_clause(const std::vector<int>& clause) {
-        std::cout << "adding a clause\n";
         for (int lit : clause)
             kissat_add(solver, lit);
-        std::cout << "0 literal\n";
         kissat_add(solver, 0); // terminate clause
     }
 
@@ -98,13 +96,10 @@ class KissatSolver {
 
 SatSolverResult launch_kissat(const Cnf& cnf) {
     KissatSolver solver;
-    std::cout << "Adding clauses to SAT solver\n";
     for (const CnfRow& row : cnf.get_rows())
         if (row.m_type == CnfRowType::CLAUSE)
             solver.add_clause(row.m_clause);
-    std::cout << "Starting SAT solver\n";
     bool is_sat = solver.solve();
-    std::cout << "SAT solver finished\n";
     SatSolverResult result;
     if (is_sat) {
         result.result = SatSolverResultType::SAT;
@@ -116,9 +111,7 @@ SatSolverResult launch_kissat(const Cnf& cnf) {
         }
     } else {
         result.result = SatSolverResultType::UNSAT;
-        std::cout << "Extracting proof\n";
         std::string proof_str = solver.get_proof();
-        std::cout << "Proof extracted\n";
         std::istringstream iss(proof_str);
         std::string line;
         while (std::getline(iss, line))

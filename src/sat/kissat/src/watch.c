@@ -154,7 +154,7 @@ void kissat_watch_large_clauses (kissat *solver) {
       continue;
 
     unsigned *lits = c->lits;
-    kissat_sort_literals (solver, values, assigned, c->size, lits);
+    kissat_sort_literals_inline (solver, values, assigned, c->size, lits);
     c->searched = 2;
 
     const reference ref = (ward *) c - arena;

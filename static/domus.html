@@ -34,10 +34,6 @@
     </div>
   </div>
 
-  <footer>
-    <p>By Giordano Andreola</p>
-  </footer>
-
   <script>
     function loadFile(fileName, event) {
       const file = event.target.files[0];
@@ -51,10 +47,52 @@
       }
     }
 
+    function fitSvg(svg, padding = 8) {
+      if (!svg) return;
+      try {
+        let group = svg.querySelector('g');
+        if (group) {
+          const b = group.getBBox();
+          const x = b.x - padding, y = b.y - padding;
+          const w = Math.max(1, b.width + padding * 2), h = Math.max(1, b.height + padding * 2);
+          svg.setAttribute('viewBox', `${x} ${y} ${w} ${h}`);
+        } else {
+          const children = Array.from(svg.children).filter(el => el.tagName.toLowerCase() !== 'defs');
+          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+          children.forEach(el => {
+            if (typeof el.getBBox === 'function') {
+              try {
+                const bb = el.getBBox();
+                minX = Math.min(minX, bb.x);
+                minY = Math.min(minY, bb.y);
+                maxX = Math.max(maxX, bb.x + bb.width);
+                maxY = Math.max(maxY, bb.y + bb.height);
+              } catch (e) {}
+            }
+          });
+          if (minX === Infinity) return;
+          const x = minX - padding, y = minY - padding;
+          const w = Math.max(1, (maxX - minX) + padding * 2), h = Math.max(1, (maxY - minY) + padding * 2);
+          svg.setAttribute('viewBox', `${x} ${y} ${w} ${h}`);
+        }
+      } catch (err) {
+        const rect = svg.getBoundingClientRect();
+        svg.setAttribute('viewBox', `0 0 ${rect.width || 800} ${rect.height || 600}`);
+      }
+      svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      svg.style.width = '90%';
+      svg.style.height = '90%';
+    }
+
     function visualizeSvg(fileName, svgElement) {
       try {
         const svgContent = FS.readFile(fileName, { encoding: 'utf8' });
         svgElement.innerHTML = svgContent;
+        // wait a frame so the inserted SVG is parsed, then compute the viewBox
+        requestAnimationFrame(() => {
+          const svg = svgElement.querySelector('svg');
+          if (svg) fitSvg(svg, 8);
+        });
       } catch (e) {
         console.error('Error loading file:', e);
       }

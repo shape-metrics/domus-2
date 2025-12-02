@@ -175,7 +175,7 @@ resume_watching_large_clauses_after_elimination (kissat *solver) {
     assert (c->size > 2);
 
     unsigned *lits = c->lits;
-    kissat_sort_literals (solver, values, assigned, c->size, lits);
+    kissat_sort_literals_inline (solver, values, assigned, c->size, lits);
     c->searched = 2;
 
     const reference ref = (ward *) c - arena;

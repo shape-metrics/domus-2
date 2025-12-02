@@ -39,6 +39,6 @@ int main() {
     std::cout << "Initial number of cycles: " << result.initial_number_of_cycles << "\n";
     std::cout << "Number of added cycles: " << result.number_of_added_cycles << "\n";
     std::cout << "Number of useless bends: " << result.number_of_useless_bends << "\n";
-    test_graph(*graph);
+    // test_graph(*graph);
     return 0;
 }

@@ -111,12 +111,12 @@ svg {
     padding: 0.5rem;
     margin-left: 2rem;
     margin-right: 2rem;
-    width: 30rem;
-    height: 33rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    width: 45rem;
+    height: 40rem;
 }
 
 #red-graph-upload {
@@ -139,4 +139,17 @@ svg {
 .enabled {
     opacity: 1;
     cursor: pointer;
+}
+
+
+#embedding-svg {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+#embedding-svg > svg {
+    display: block;
+    width: 100%;
+    height: 100%;
 }

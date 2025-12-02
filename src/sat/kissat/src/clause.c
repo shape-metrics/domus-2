@@ -1,6 +1,7 @@
 #include "allocate.h"
 #include "collect.h"
 #include "inline.h"
+#include "sort.c"
 
 #include <string.h>
 

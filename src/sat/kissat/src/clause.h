@@ -75,9 +75,7 @@ reference kissat_new_original_clause (struct kissat *);
 reference kissat_new_irredundant_clause (struct kissat *);
 reference kissat_new_redundant_clause (struct kissat *, unsigned glue);
 
-#ifndef INLINE_SORT
-void kissat_sort_literals (struct kissat *, unsigned size, unsigned *lits);
-#endif
+// void kissat_sort_literals (struct kissat *, unsigned size, unsigned *lits);
 
 void kissat_connect_clause (struct kissat *, clause *);
 void kissat_connect_referenced (struct kissat *solver, reference);

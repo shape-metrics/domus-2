@@ -593,7 +593,7 @@ static void rewatch_clauses (kissat *solver, reference start) {
     next = kissat_next_clause (c);
 
     unsigned *lits = c->lits;
-    kissat_sort_literals (solver, values, assigned, c->size, lits);
+    kissat_sort_literals_inline (solver, values, assigned, c->size, lits);
     c->searched = 2;
 
     const reference ref = (ward *) c - arena;

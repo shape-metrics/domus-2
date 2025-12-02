@@ -1,2 +1,4 @@
 controllare function che trova un ciclo in grafo non diretto
 -> controllare make_cycle_good
+
+capire come cambiare la roba random nei sat

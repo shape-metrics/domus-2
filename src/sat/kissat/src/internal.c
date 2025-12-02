@@ -326,7 +326,6 @@ void kissat_add (kissat *solver, int elit) {
     const size_t isize = SIZE_STACK (solver->clause);
     unsigned *ilits = BEGIN_STACK (solver->clause);
     assert (isize < (unsigned) INT_MAX);
-
     if (solver->inconsistent)
       LOG ("inconsistent thus skipping original clause");
     else if (solver->clause_satisfied)
@@ -335,13 +334,11 @@ void kissat_add (kissat *solver, int elit) {
       LOG ("skipping trivial original clause");
     else {
       kissat_activate_literals (solver, isize, ilits);
-
       if (!isize) {
         if (solver->clause_shrink)
           LOG ("all original clause literals root level falsified");
         else
           LOG ("found empty original clause");
-
         if (!solver->inconsistent) {
           LOG ("thus solver becomes inconsistent");
           solver->inconsistent = true;
@@ -363,7 +360,6 @@ void kissat_add (kissat *solver, int elit) {
           (void) kissat_search_propagate (solver);
       } else {
         reference res = kissat_new_original_clause (solver);
-
         const unsigned a = ilits[0];
         const unsigned b = ilits[1];
 
