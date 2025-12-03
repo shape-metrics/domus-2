@@ -1,13 +1,5 @@
 #!/bin/bash
 
-echo -e "DELETING FILES"
-rm -f main
-rm -f stats
-rm -f gen
-rm -f build/main
-rm -f build/stats
-rm -f build/gen
-
 echo -e "\n\nBUILDING FILES"
 cmake .
 make -j8

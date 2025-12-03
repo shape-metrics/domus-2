@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Graph Embedder</title>
+  <title>DOMUS</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -12,14 +12,18 @@
   <div class="topnav">
     <span>DOMUS</span>
   </div>
+
   <div id="example-graphs-container">
     <form action="#">
-    <label for="example-graphs">Example Graphs</label>
-    <select name="example-graphs" id="example-graphs"></select>
-    <input type="submit" value="Use" class="button" />
-  </form>
-  <button class="button" id="download-example-button" onclick="downloadExample()">Download Example</button>
+      <label for="example-graphs">Example Graphs</label>
+      <select name="example-graphs" id="example-graphs"></select>
+      <input type="submit" value="Use" class="button" />
+    </form>
+    <button class="button" id="download-example-button" onclick="downloadExample()">
+      Download Example
+    </button>
   </div>
+
   <div id="control-panel">
     <div>
       <label for="fileInput" class="custom-file-upload" id="graph-upload">
@@ -28,185 +32,21 @@
       <input type="file" id="fileInput">
     </div>
     <div>
-      <button class="button" onclick="embed()">Compute Embedding</button>
+      <button class="button" onclick="computeDrawing()">Compute Drawing</button>
     </div>
   </div>
 
   <div id="drawings-container">
     <div class="svg-container">
-      <div id="embedding-svg"></div>
+      <div id="drawing-svg"></div>
       <div class="download-buttons">
         <button class="button disabled download-graphml" id="download-graphml-id" disabled>Download GraphML</button>
         <button class="button disabled download-svg" id="download-svg-id" disabled>Download SVG</button>
       </div>
     </div>
   </div>
-  <script>
-    var Module = {
-      onRuntimeInitialized: function() {
-        // Populate example graphs dropdown
-        const exampleGraphs = Module.FS.readdir('/example-graphs').filter(f => f.endsWith('.txt'));
-        const select = document.getElementById('example-graphs');
-        exampleGraphs.forEach((graphFile) => {
-          const option = document.createElement('option');
-          option.value = graphFile;
-          option.textContent = graphFile;
-          select.appendChild(option);
-        });
-        const form = document.querySelector('form');
-        form.addEventListener('submit', (event) => {
-          event.preventDefault();
-          const selectedGraph = select.value;
-          const inputLabel = document.getElementById('graph-upload');
-          inputLabel.textContent = selectedGraph;
-          const graphPath = `/example-graphs/${selectedGraph}`;
-          const graphContent = Module.FS.readFile(graphPath, { encoding: 'utf8' });
-          Module.FS.writeFile('/input.txt', graphContent);
-        });
-      }
-    };
 
-    function downloadExample() {
-      const select = document.getElementById('example-graphs');
-      const selectedGraph = select.value;
-      const graphPath = `/example-graphs/${selectedGraph}`;
-      const graphContent = FS.readFile(graphPath, { encoding: 'utf8' });
-      const blob = new Blob([graphContent], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = selectedGraph;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    function loadFile(fileName, event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          const contents = e.target.result;
-          FS.writeFile(fileName, contents);
-        };
-        reader.readAsText(file);
-      }
-    }
-
-    function fitSvg(svg, padding = 8) {
-      if (!svg) return;
-      try {
-        let group = svg.querySelector('g');
-        if (group) {
-          const b = group.getBBox();
-          const x = b.x - padding, y = b.y - padding;
-          const w = Math.max(1, b.width + padding * 2), h = Math.max(1, b.height + padding * 2);
-          svg.setAttribute('viewBox', `${x} ${y} ${w} ${h}`);
-        } else {
-          const children = Array.from(svg.children).filter(el => el.tagName.toLowerCase() !== 'defs');
-          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-          children.forEach(el => {
-            if (typeof el.getBBox === 'function') {
-              try {
-                const bb = el.getBBox();
-                minX = Math.min(minX, bb.x);
-                minY = Math.min(minY, bb.y);
-                maxX = Math.max(maxX, bb.x + bb.width);
-                maxY = Math.max(maxY, bb.y + bb.height);
-              } catch (e) {}
-            }
-          });
-          if (minX === Infinity) return;
-          const x = minX - padding, y = minY - padding;
-          const w = Math.max(1, (maxX - minX) + padding * 2), h = Math.max(1, (maxY - minY) + padding * 2);
-          svg.setAttribute('viewBox', `${x} ${y} ${w} ${h}`);
-        }
-      } catch (err) {
-        const rect = svg.getBoundingClientRect();
-        svg.setAttribute('viewBox', `0 0 ${rect.width || 800} ${rect.height || 600}`);
-      }
-      svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-      svg.style.width = '90%';
-      svg.style.height = '90%';
-    }
-
-    function visualizeSvg(fileName, svgElement) {
-      try {
-        const svgContent = FS.readFile(fileName, { encoding: 'utf8' });
-        svgElement.innerHTML = svgContent;
-        // wait a frame so the inserted SVG is parsed, then compute the viewBox
-        requestAnimationFrame(() => {
-          const svg = svgElement.querySelector('svg');
-          if (svg) fitSvg(svg, 8);
-        });
-      } catch (e) {
-        console.error('Error loading file:', e);
-      }
-    }
-
-    const sefeSvgOutput = document.getElementById('embedding-svg');
-
-    const inputLabel = document.getElementById('graph-upload');
-    const fileInput = document.getElementById('fileInput');
-    fileInput.addEventListener('change', (event) => {
-      loadFile('/input.txt', event);
-      inputLabel.textContent = event.target.files[0].name;
-    });
-
-    function writeFile(fileName, content) {
-      try {
-        FS.writeFile(fileName, content);
-        console.log(`File ${fileName} written successfully.`);
-      } catch (e) {
-        console.error('Error writing file:', e);
-      }
-    }
-
-    function embed() {
-      let value = Module.ccall('compute_orthogonal_drawing', null, [], []);
-      visualizeSvg('/output.svg', sefeSvgOutput);
-      const buttons = document.getElementsByClassName('button');
-      Array.from(buttons).forEach((button) => {
-        button.disabled = false;
-        button.classList.add('enabled');
-      });
-    }
-
-    const svgDownload = document.getElementById('download-svg-id');
-    svgDownload.addEventListener('click', (_) => {
-      const svgContent = document.getElementById('embedding-svg').innerHTML;
-      const svgFileName = "embedding.svg";
-      const blob = new Blob([svgContent], { type: 'image/svg+xml' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = svgFileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    });
-
-    const graphmlDownload = document.getElementById('download-graphml-id');
-    graphmlDownload.addEventListener('click', (_) => {
-      try {
-        const graphmlContent = FS.readFile('/output.graphml', { encoding: 'utf8' });
-        const graphmlFileName = "embedding.graphml";
-        const blob = new Blob([graphmlContent], { type: 'application/xml' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = graphmlFileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      } catch (e) {
-        console.error('Error downloading GraphML file:', e);
-      }
-    });
-  </script>
+  <script src="main.js"></script>
   <script src="domus.js"></script>
 </body>
 
