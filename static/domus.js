@@ -39,7 +39,7 @@ if (ENVIRONMENT_IS_NODE) {
 
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
-// include: /tmp/tmpas9sar0z.js
+// include: /tmp/tmplztc44kq.js
 
   if (!Module.expectedDataFileDownloads) {
     Module.expectedDataFileDownloads = 0;
@@ -220,21 +220,21 @@ Module['FS_createPath']("/", "example-graphs", true, true);
 
   })();
 
-// end include: /tmp/tmpas9sar0z.js
-// include: /tmp/tmpjivqp0bl.js
+// end include: /tmp/tmplztc44kq.js
+// include: /tmp/tmpu7gdaei3.js
 
     // All the pre-js content up to here must remain later on, we need to run
     // it.
     if (Module['$ww'] || (typeof ENVIRONMENT_IS_PTHREAD != 'undefined' && ENVIRONMENT_IS_PTHREAD)) Module['preRun'] = [];
     var necessaryPreJSTasks = Module['preRun'].slice();
-  // end include: /tmp/tmpjivqp0bl.js
-// include: /tmp/tmp0a8iywyt.js
+  // end include: /tmp/tmpu7gdaei3.js
+// include: /tmp/tmp71wcx8kk.js
 
     if (!Module['preRun']) throw 'Module.preRun should exist because file support used it; did a pre-js delete it?';
     necessaryPreJSTasks.forEach((task) => {
       if (Module['preRun'].indexOf(task) < 0) throw 'All preRun tasks that exist before user pre-js code should remain after; did you replace Module or modify Module.preRun?';
     });
-  // end include: /tmp/tmp0a8iywyt.js
+  // end include: /tmp/tmp71wcx8kk.js
 
 
 // Sometimes an existing Module object exists with properties
@@ -4637,6 +4637,8 @@ function dbg(...args) {
       return 0;
     };
 
+  var _llvm_eh_typeid_for = (type) => type;
+
   var wasmTableMirror = [];
   
   /** @type {WebAssembly.Table} */
@@ -4902,7 +4904,9 @@ var wasmImports = {
   /** @export */
   invoke_viiiiiiiiii,
   /** @export */
-  invoke_viiiiiiiiiiiiiii
+  invoke_viiiiiiiiiiiiiii,
+  /** @export */
+  llvm_eh_typeid_for: _llvm_eh_typeid_for
 };
 var wasmExports = createWasm();
 var ___wasm_call_ctors = createExportWrapper('__wasm_call_ctors', 0);
@@ -4976,6 +4980,17 @@ function invoke_viii(index,a1,a2,a3) {
   }
 }
 
+function invoke_v(index) {
+  var sp = stackSave();
+  try {
+    getWasmTableEntry(index)();
+  } catch(e) {
+    stackRestore(sp);
+    if (!(e instanceof EmscriptenEH)) throw e;
+    _setThrew(1, 0);
+  }
+}
+
 function invoke_iiiiii(index,a1,a2,a3,a4,a5) {
   var sp = stackSave();
   try {
@@ -5024,17 +5039,6 @@ function invoke_vi(index,a1) {
   var sp = stackSave();
   try {
     getWasmTableEntry(index)(a1);
-  } catch(e) {
-    stackRestore(sp);
-    if (!(e instanceof EmscriptenEH)) throw e;
-    _setThrew(1, 0);
-  }
-}
-
-function invoke_v(index) {
-  var sp = stackSave();
-  try {
-    getWasmTableEntry(index)();
   } catch(e) {
     stackRestore(sp);
     if (!(e instanceof EmscriptenEH)) throw e;

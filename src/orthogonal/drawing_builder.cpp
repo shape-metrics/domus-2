@@ -224,7 +224,7 @@ void fix_negative_positions(const UndirectedSimpleGraph& graph, GraphAttributes&
 DrawingResult make_orthogonal_drawing_incremental(const UndirectedSimpleGraph& graph,
                                                   std::vector<Cycle>& cycles) {
     if (!is_graph_connected(graph))
-        throw std::runtime_error("make_orthogonal_drawing_incremental: graph is not connected");
+        throw DisconnectedGraphError();
     auto augmented_graph = std::make_unique<UndirectedSimpleGraph>();
     GraphAttributes attributes;
     attributes.add_attribute(Attribute::NODES_COLOR);
