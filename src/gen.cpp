@@ -34,9 +34,9 @@ int main() {
         std::string sub_folder = generated_graphs_folder + std::to_string(number_of_nodes) + "/";
         std::filesystem::create_directories(sub_folder);
         for (int i = 1; i <= graphs_generated_per_same_nodes_number; ++i) {
-            double density = min_density + (max_density - min_density) * i /
-                                               graphs_generated_per_same_nodes_number;
-            int number_of_edges = static_cast<int>(density * number_of_nodes);
+            const double density = min_density + (max_density - min_density) * i /
+                                                     graphs_generated_per_same_nodes_number;
+            const int number_of_edges = static_cast<int>(density * number_of_nodes);
             std::cout << "\rGenerating graph with " << number_of_nodes << " nodes and "
                       << number_of_edges << " edges.     ";
             auto graph =

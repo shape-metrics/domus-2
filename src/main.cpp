@@ -2,7 +2,6 @@
 
 #include "config/config.hpp"
 #include "core/graph/file_loader.hpp"
-#include "core/graph/graphs_algorithms.hpp"
 #include "orthogonal/drawing_builder.hpp"
 #include "orthogonal/drawing_stats.hpp"
 #include "planarity/auslander_parter.hpp"

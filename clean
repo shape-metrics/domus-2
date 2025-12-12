@@ -12,3 +12,4 @@ rm -f main
 rm -f gen
 rm -f stats
 rm -f -r build
+rm -f -r .cache

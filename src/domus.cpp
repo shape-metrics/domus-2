@@ -1,11 +1,7 @@
-#include <emscripten/emscripten.h>
-
 #include "core/graph/file_loader.hpp"
-#include "core/graph/graphs_algorithms.hpp"
 #include "orthogonal/drawing_builder.hpp"
 
 extern "C" {
-EMSCRIPTEN_KEEPALIVE
 int compute_orthogonal_drawing() {
     const auto graph = load_graph_from_txt_file("input.txt");
     if (graph->size() > 30) // graph too large

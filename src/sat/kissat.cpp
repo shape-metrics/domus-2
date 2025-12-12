@@ -1,8 +1,6 @@
 #include "sat/kissat.hpp"
 
-#include <fstream>
 #include <iostream>
-#include <random>
 #include <sstream>
 #include <stdexcept>
 #include <stdio.h>
@@ -13,8 +11,6 @@ extern "C" {
 #include "kissat/src/kissat.h"
 #include "kissat/src/proof.h"
 }
-
-#include "core/utils.hpp"
 
 std::string SatSolverResult::to_string() const {
     std::string r = result == SatSolverResultType::SAT ? "SAT" : "UNSAT";
@@ -99,7 +95,7 @@ SatSolverResult launch_kissat(const Cnf& cnf) {
     for (const CnfRow& row : cnf.get_rows())
         if (row.m_type == CnfRowType::CLAUSE)
             solver.add_clause(row.m_clause);
-    bool is_sat = solver.solve();
+    const bool is_sat = solver.solve();
     SatSolverResult result;
     if (is_sat) {
         result.result = SatSolverResultType::SAT;
@@ -111,7 +107,7 @@ SatSolverResult launch_kissat(const Cnf& cnf) {
         }
     } else {
         result.result = SatSolverResultType::UNSAT;
-        std::string proof_str = solver.get_proof();
+        const std::string proof_str = solver.get_proof();
         std::istringstream iss(proof_str);
         std::string line;
         while (std::getline(iss, line))

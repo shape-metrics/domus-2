@@ -3,9 +3,6 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
-#include <fstream>
-
-#include "core/graph/graph.hpp"
 
 Point2D::Point2D(const double x, const double y) : x_m(x), y_m(y) {}
 

@@ -4,8 +4,6 @@
 #include <iostream>
 #include <stack>
 
-#include "core/graph/graphs_algorithms.hpp"
-
 Embedding::Embedding(const UndirectedSimpleGraph& graph) {
     for (const int node_id : graph.get_nodes_ids())
         adjacency_list[node_id];

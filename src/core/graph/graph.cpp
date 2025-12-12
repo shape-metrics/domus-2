@@ -3,8 +3,6 @@
 #include <iostream>
 #include <ranges>
 
-#include "core/utils.hpp"
-
 GraphEdge::GraphEdge(const int id, const GraphNode& from, const GraphNode& to)
     : m_id(id), m_from_id(from.get_id()), m_to_id(to.get_id()) {
     if (&from.get_owner() != &to.get_owner())

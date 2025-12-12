@@ -6,8 +6,6 @@
 #include <mutex>
 #include <sstream>
 
-#include "core/utils.hpp"
-
 const std::string project_path = std::filesystem::current_path().string() + "/";
 const std::string cnf_logs_file = "cnf_logs.txt";
 std::mutex cnf_logs_mutex;

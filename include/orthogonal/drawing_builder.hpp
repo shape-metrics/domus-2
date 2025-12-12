@@ -2,19 +2,17 @@
 #define MY_DRAWING_BUILDER_H
 
 #include <memory>
-#include <unordered_map>
-#include <vector>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
 
 #include "core/graph/attributes.hpp"
 #include "core/graph/graph.hpp"
 #include "orthogonal/shape/shape.hpp"
 
 class DisconnectedGraphError : public std::runtime_error {
-public:
-    DisconnectedGraphError()
-        : std::runtime_error("The graph is not connected.") {}
+  public:
+    DisconnectedGraphError() : std::runtime_error("The graph is not connected.") {}
 };
 
 void make_svg(const UndirectedSimpleGraph& graph,

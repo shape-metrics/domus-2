@@ -1,17 +1,13 @@
 #include "orthogonal/shape/shape_builder.hpp"
 
 #include <algorithm>
-#include <filesystem>
 #include <fstream>
 #include <mutex>
 #include <optional>
 #include <random>
 #include <stdexcept>
 #include <string>
-#include <unordered_map>
 
-#include "core/tree/tree.hpp"
-#include "core/tree/tree_algorithms.hpp"
 #include "orthogonal/shape/clauses_functions.hpp"
 #include "orthogonal/shape/variables_handler.hpp"
 #include "sat/cnf.hpp"

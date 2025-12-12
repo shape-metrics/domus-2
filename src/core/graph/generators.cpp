@@ -1,8 +1,5 @@
 #include "core/graph/generators.hpp"
 
-#include <iostream>
-#include <random>
-
 #include "core/graph/graphs_algorithms.hpp"
 
 std::unique_ptr<UndirectedSimpleGraph>

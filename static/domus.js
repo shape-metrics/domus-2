@@ -39,7 +39,7 @@ if (ENVIRONMENT_IS_NODE) {
 
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
-// include: /tmp/tmplztc44kq.js
+// include: /tmp/tmpgwl3v4tf.js
 
   if (!Module.expectedDataFileDownloads) {
     Module.expectedDataFileDownloads = 0;
@@ -220,21 +220,21 @@ Module['FS_createPath']("/", "example-graphs", true, true);
 
   })();
 
-// end include: /tmp/tmplztc44kq.js
-// include: /tmp/tmpu7gdaei3.js
+// end include: /tmp/tmpgwl3v4tf.js
+// include: /tmp/tmpu2binksv.js
 
     // All the pre-js content up to here must remain later on, we need to run
     // it.
     if (Module['$ww'] || (typeof ENVIRONMENT_IS_PTHREAD != 'undefined' && ENVIRONMENT_IS_PTHREAD)) Module['preRun'] = [];
     var necessaryPreJSTasks = Module['preRun'].slice();
-  // end include: /tmp/tmpu7gdaei3.js
-// include: /tmp/tmp71wcx8kk.js
+  // end include: /tmp/tmpu2binksv.js
+// include: /tmp/tmp1whyhdsz.js
 
     if (!Module['preRun']) throw 'Module.preRun should exist because file support used it; did a pre-js delete it?';
     necessaryPreJSTasks.forEach((task) => {
       if (Module['preRun'].indexOf(task) < 0) throw 'All preRun tasks that exist before user pre-js code should remain after; did you replace Module or modify Module.preRun?';
     });
-  // end include: /tmp/tmp71wcx8kk.js
+  // end include: /tmp/tmp1whyhdsz.js
 
 
 // Sometimes an existing Module object exists with properties
@@ -1423,6 +1423,8 @@ function dbg(...args) {
   var ___cxa_find_matching_catch_2 = () => findMatchingCatch([]);
 
   var ___cxa_find_matching_catch_3 = (arg0) => findMatchingCatch([arg0]);
+
+  var ___cxa_find_matching_catch_4 = (arg0,arg1) => findMatchingCatch([arg0,arg1]);
 
   
   
@@ -4807,6 +4809,8 @@ var wasmImports = {
   __cxa_find_matching_catch_2: ___cxa_find_matching_catch_2,
   /** @export */
   __cxa_find_matching_catch_3: ___cxa_find_matching_catch_3,
+  /** @export */
+  __cxa_find_matching_catch_4: ___cxa_find_matching_catch_4,
   /** @export */
   __cxa_rethrow: ___cxa_rethrow,
   /** @export */

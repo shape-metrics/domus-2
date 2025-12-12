@@ -1,7 +1,6 @@
 #include "orthogonal/area_compacter.hpp"
 
 #include "orthogonal/drawing_builder.hpp"
-#include "orthogonal/equivalence_classes.hpp"
 
 auto build_index_to_nodes_map(const UndirectedSimpleGraph& graph,
                               const GraphAttributes& attributes) {
